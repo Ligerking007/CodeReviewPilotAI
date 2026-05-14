@@ -2,7 +2,6 @@ import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as Linking from 'expo-linking';
 import { StatusBar } from 'expo-status-bar';
-import { useColorScheme } from 'react-native';
 import './src/i18n';
 import { AuthProvider, useAuth } from './src/store/auth-context';
 import { HomeScreen } from './src/screens/HomeScreen';
@@ -10,13 +9,12 @@ import { ResultScreen } from './src/screens/ResultScreen';
 import { HistoryScreen } from './src/screens/HistoryScreen';
 import { AuthCallbackScreen } from './src/screens/AuthCallbackScreen';
 import { RootStackParamList } from './src/types/navigation';
-import { buildTheme } from './src/theme/theme';
+import { ThemeProvider, useAppTheme } from './src/theme/theme-context';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function AppNavigator() {
-  const scheme = useColorScheme();
-  const colors = buildTheme(scheme === 'dark');
+  const { colors, isDark } = useAppTheme();
   const { tokenLoaded } = useAuth();
 
   if (!tokenLoaded) {
@@ -37,9 +35,9 @@ function AppNavigator() {
         }
       }}
       theme={{
-        ...(scheme === 'dark' ? DarkTheme : DefaultTheme),
+        ...(isDark ? DarkTheme : DefaultTheme),
         colors: {
-          ...(scheme === 'dark' ? DarkTheme.colors : DefaultTheme.colors),
+          ...(isDark ? DarkTheme.colors : DefaultTheme.colors),
           background: colors.background,
           card: colors.surface,
           primary: colors.accent,
@@ -48,7 +46,7 @@ function AppNavigator() {
         }
       }}
     >
-      <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
+      <StatusBar style={isDark ? 'light' : 'dark'} />
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Result" component={ResultScreen} />
@@ -61,8 +59,10 @@ function AppNavigator() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppNavigator />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AppNavigator />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

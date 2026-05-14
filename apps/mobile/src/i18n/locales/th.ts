@@ -28,6 +28,7 @@ export const th = {
   copy: 'คัดลอก',
   copied: 'คัดลอกแล้ว',
   noHistory: 'ยังไม่มีประวัติการรีวิว',
+  themeMode: 'โหมดธีม',
   prPlaceholder: 'https://github.com/owner/repo/pull/123',
   loginRequired: 'เชื่อมต่อ GitHub ก่อนรีวิว pull request'
 };

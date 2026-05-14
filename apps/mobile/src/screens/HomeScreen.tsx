@@ -1,7 +1,7 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, TextInput, useColorScheme, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import i18n from '../i18n';
 import { Button } from '../components/Button';
@@ -9,7 +9,7 @@ import { Screen } from '../components/Screen';
 import { createReview, loginWithGithubToken } from '../services/api';
 import { saveLocalReview } from '../services/storage';
 import { useAuth } from '../store/auth-context';
-import { buildTheme } from '../theme/theme';
+import { useAppTheme } from '../theme/theme-context';
 import { RootStackParamList } from '../types/navigation';
 import { isValidPullRequestUrl } from '../utils/pr-url';
 
@@ -18,7 +18,7 @@ type LoginMethod = 'oauth' | 'pat';
 
 export function HomeScreen({ navigation }: Props) {
   const { t } = useTranslation();
-  const colors = buildTheme(useColorScheme() === 'dark');
+  const { colors, mode, cycleMode } = useAppTheme();
   const { token, login, logout, setSessionToken } = useAuth();
   const [prUrl, setPrUrl] = useState('');
   const [githubPat, setGithubPat] = useState('');
@@ -76,6 +76,9 @@ export function HomeScreen({ navigation }: Props) {
           <Text style={[styles.subtitle, { color: colors.muted }]}>{t('subtitle')}</Text>
         </View>
         <View style={styles.actions}>
+          <Pressable accessibilityLabel={t('themeMode')} style={[styles.iconButton, { borderColor: colors.border }]} onPress={cycleMode}>
+            <Ionicons name={mode === 'dark' ? 'moon' : mode === 'light' ? 'sunny' : 'phone-portrait-outline'} size={20} color={colors.text} />
+          </Pressable>
           <Pressable style={[styles.iconButton, { borderColor: colors.border }]} onPress={() => i18n.changeLanguage(language === 'en' ? 'th' : 'en')}>
             <Text style={[styles.iconButtonText, { color: colors.text }]}>{language.toUpperCase()}</Text>
           </Pressable>

@@ -2,13 +2,13 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '../components/Screen';
 import { getHistory } from '../services/api';
 import { getLocalHistory } from '../services/storage';
 import { useAuth } from '../store/auth-context';
-import { buildTheme } from '../theme/theme';
+import { useAppTheme } from '../theme/theme-context';
 import { RootStackParamList } from '../types/navigation';
 import { ReviewResponse } from '../types/review';
 
@@ -16,7 +16,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'History'>;
 
 export function HistoryScreen({ navigation }: Props) {
   const { t } = useTranslation();
-  const colors = buildTheme(useColorScheme() === 'dark');
+  const { colors } = useAppTheme();
   const { token } = useAuth();
   const [items, setItems] = useState<ReviewResponse[]>([]);
 

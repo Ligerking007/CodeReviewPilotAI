@@ -1,10 +1,10 @@
 import { PropsWithChildren } from 'react';
-import { ScrollView, StyleSheet, useColorScheme, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { buildTheme } from '../theme/theme';
+import { useAppTheme } from '../theme/theme-context';
 
 export function Screen({ children }: PropsWithChildren) {
-  const colors = buildTheme(useColorScheme() === 'dark');
+  const { colors } = useAppTheme();
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.scroll}>

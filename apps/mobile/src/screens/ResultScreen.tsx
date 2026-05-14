@@ -2,21 +2,21 @@ import * as Clipboard from 'expo-clipboard';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Markdown from 'react-native-markdown-display';
 import { Ionicons } from '@expo/vector-icons';
 import { Button } from '../components/Button';
 import { IssueCard } from '../components/IssueCard';
 import { Screen } from '../components/Screen';
 import { Section } from '../components/Section';
-import { buildTheme } from '../theme/theme';
+import { useAppTheme } from '../theme/theme-context';
 import { RootStackParamList } from '../types/navigation';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Result'>;
 
 export function ResultScreen({ route, navigation }: Props) {
   const { t } = useTranslation();
-  const colors = buildTheme(useColorScheme() === 'dark');
+  const { colors } = useAppTheme();
   const { review } = route.params;
   const [copied, setCopied] = useState(false);
 

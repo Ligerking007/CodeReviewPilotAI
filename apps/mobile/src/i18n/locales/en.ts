@@ -28,6 +28,7 @@ export const en = {
   copy: 'Copy',
   copied: 'Copied',
   noHistory: 'No review history yet.',
+  themeMode: 'Theme mode',
   prPlaceholder: 'https://github.com/owner/repo/pull/123',
   loginRequired: 'Connect GitHub before reviewing pull requests.'
 };

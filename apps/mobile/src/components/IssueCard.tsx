@@ -1,5 +1,5 @@
-import { StyleSheet, Text, useColorScheme, View } from 'react-native';
-import { buildTheme } from '../theme/theme';
+import { StyleSheet, Text, View } from 'react-native';
+import { useAppTheme } from '../theme/theme-context';
 import { ReviewIssue } from '../types/review';
 
 const severityColors = {
@@ -11,7 +11,7 @@ const severityColors = {
 };
 
 export function IssueCard({ issue }: { issue: ReviewIssue }) {
-  const colors = buildTheme(useColorScheme() === 'dark');
+  const { colors } = useAppTheme();
   const badgeColor = severityColors[issue.severity];
 
   return (

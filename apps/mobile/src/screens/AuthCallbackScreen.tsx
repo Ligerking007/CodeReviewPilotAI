@@ -1,17 +1,17 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, useColorScheme } from 'react-native';
+import { Text } from 'react-native';
 import { Screen } from '../components/Screen';
 import { useAuth } from '../store/auth-context';
-import { buildTheme } from '../theme/theme';
+import { useAppTheme } from '../theme/theme-context';
 import { RootStackParamList } from '../types/navigation';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AuthCallback'>;
 
 export function AuthCallbackScreen({ route, navigation }: Props) {
   const { t } = useTranslation();
-  const colors = buildTheme(useColorScheme() === 'dark');
+  const { colors } = useAppTheme();
   const { setSessionToken } = useAuth();
 
   useEffect(() => {
