@@ -1,7 +1,7 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, TextInput, useColorScheme, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import i18n from '../i18n';
 import { Button } from '../components/Button';
@@ -9,18 +9,20 @@ import { Screen } from '../components/Screen';
 import { createReview, loginWithGithubToken } from '../services/api';
 import { saveLocalReview } from '../services/storage';
 import { useAuth } from '../store/auth-context';
-import { buildTheme } from '../theme/theme';
+import { useAppTheme } from '../theme/theme-context';
 import { RootStackParamList } from '../types/navigation';
 import { isValidPullRequestUrl } from '../utils/pr-url';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+type LoginMethod = 'oauth' | 'pat';
 
 export function HomeScreen({ navigation }: Props) {
   const { t } = useTranslation();
-  const colors = buildTheme(useColorScheme() === 'dark');
+  const { colors, mode, cycleMode } = useAppTheme();
   const { token, login, logout, setSessionToken } = useAuth();
   const [prUrl, setPrUrl] = useState('');
   const [githubPat, setGithubPat] = useState('');
+  const [loginMethod, setLoginMethod] = useState<LoginMethod>('pat');
   const [loading, setLoading] = useState(false);
   const [patLoading, setPatLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -74,6 +76,9 @@ export function HomeScreen({ navigation }: Props) {
           <Text style={[styles.subtitle, { color: colors.muted }]}>{t('subtitle')}</Text>
         </View>
         <View style={styles.actions}>
+          <Pressable accessibilityLabel={t('themeMode')} style={[styles.iconButton, { borderColor: colors.border }]} onPress={cycleMode}>
+            <Ionicons name={mode === 'dark' ? 'moon' : mode === 'light' ? 'sunny' : 'phone-portrait-outline'} size={20} color={colors.text} />
+          </Pressable>
           <Pressable style={[styles.iconButton, { borderColor: colors.border }]} onPress={() => i18n.changeLanguage(language === 'en' ? 'th' : 'en')}>
             <Text style={[styles.iconButtonText, { color: colors.text }]}>{language.toUpperCase()}</Text>
           </Pressable>
@@ -98,9 +103,11 @@ export function HomeScreen({ navigation }: Props) {
         {error ? <Text style={[styles.error, { color: colors.danger }]}>{error}</Text> : null}
         {notice ? <Text style={[styles.notice, { color: colors.success }]}>{notice}</Text> : null}
         <View style={styles.buttonRow}>
-          <Button onPress={token ? logout : login} variant="secondary">
-            {token ? t('logout') : t('loginGithub')}
-          </Button>
+          {token ? (
+            <Button onPress={logout} variant="secondary">
+              {t('logout')}
+            </Button>
+          ) : null}
           <Button onPress={onReview} loading={loading} disabled={!prUrl}>
             {loading ? t('reviewing') : t('review')}
           </Button>
@@ -109,22 +116,54 @@ export function HomeScreen({ navigation }: Props) {
 
       {!token ? (
         <View style={[styles.panel, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Text style={[styles.label, { color: colors.text }]}>{t('githubPat')}</Text>
-          <TextInput
-            autoCapitalize="none"
-            autoCorrect={false}
-            secureTextEntry
-            value={githubPat}
-            onChangeText={setGithubPat}
-            placeholder={t('githubPatPlaceholder')}
-            placeholderTextColor={colors.muted}
-            style={[styles.input, { color: colors.text, borderColor: colors.border, backgroundColor: colors.codeBackground }]}
-          />
-          <Text style={[styles.help, { color: colors.muted }]}>{t('githubPatHelp')}</Text>
+          <Text style={[styles.label, { color: colors.text }]}>{t('connectGithub')}</Text>
+          <View style={[styles.segmented, { borderColor: colors.border, backgroundColor: colors.codeBackground }]}>
+            {(['pat', 'oauth'] as LoginMethod[]).map((method) => {
+              const active = loginMethod === method;
+              return (
+                <Pressable
+                  key={method}
+                  accessibilityRole="button"
+                  onPress={() => {
+                    setLoginMethod(method);
+                    setError(null);
+                    setNotice(null);
+                  }}
+                  style={[styles.segment, { backgroundColor: active ? colors.accent : 'transparent' }]}
+                >
+                  <Text style={[styles.segmentText, { color: active ? '#fff' : colors.text }]}>
+                    {method === 'pat' ? t('patMethod') : t('oauthMethod')}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+          {loginMethod === 'pat' ? (
+            <>
+              <Text style={[styles.help, { color: colors.muted }]}>{t('patMethodHelp')}</Text>
+              <TextInput
+                autoCapitalize="none"
+                autoCorrect={false}
+                secureTextEntry
+                value={githubPat}
+                onChangeText={setGithubPat}
+                placeholder={t('githubPatPlaceholder')}
+                placeholderTextColor={colors.muted}
+                style={[styles.input, { color: colors.text, borderColor: colors.border, backgroundColor: colors.codeBackground }]}
+              />
+              <Text style={[styles.help, { color: colors.muted }]}>{t('githubPatHelp')}</Text>
+            </>
+          ) : (
+            <Text style={[styles.help, { color: colors.muted }]}>{t('oauthMethodHelp')}</Text>
+          )}
           <View style={styles.buttonRow}>
-            <Button onPress={onConnectPat} loading={patLoading} disabled={!githubPat.trim()}>
-              {t('connectPat')}
-            </Button>
+            {loginMethod === 'pat' ? (
+              <Button onPress={onConnectPat} loading={patLoading} disabled={!githubPat.trim()}>
+                {t('connectPat')}
+              </Button>
+            ) : (
+              <Button onPress={login}>{t('loginGithub')}</Button>
+            )}
           </View>
         </View>
       ) : null}
@@ -145,5 +184,8 @@ const styles = StyleSheet.create({
   error: { fontSize: 13 },
   notice: { fontSize: 13, fontWeight: '700' },
   help: { fontSize: 13, lineHeight: 18 },
+  segmented: { borderWidth: 1, borderRadius: 8, padding: 4, flexDirection: 'row', gap: 4 },
+  segment: { flex: 1, minHeight: 38, borderRadius: 6, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 10 },
+  segmentText: { fontSize: 14, fontWeight: '800', textAlign: 'center' },
   buttonRow: { flexDirection: 'row', gap: 12, flexWrap: 'wrap', justifyContent: 'flex-end' }
 });

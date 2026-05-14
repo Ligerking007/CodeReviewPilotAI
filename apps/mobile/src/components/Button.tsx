@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, useColorScheme } from 'react-native';
-import { buildTheme } from '../theme/theme';
+import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
+import { useAppTheme } from '../theme/theme-context';
 
 type Props = {
   children: ReactNode;
@@ -11,7 +11,7 @@ type Props = {
 };
 
 export function Button({ children, onPress, disabled, loading, variant = 'primary' }: Props) {
-  const colors = buildTheme(useColorScheme() === 'dark');
+  const { colors } = useAppTheme();
   const primary = variant === 'primary';
 
   return (

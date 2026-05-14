@@ -1,7 +1,12 @@
 export const th = {
   appName: 'CodeReviewPilot AI',
   subtitle: 'รีวิว Pull Request ด้วย AI สำหรับทีมที่ต้องการส่งงานอย่างรอบคอบ',
+  connectGithub: 'เชื่อมต่อ GitHub',
   loginGithub: 'เข้าสู่ระบบด้วย GitHub',
+  oauthMethod: 'OAuth',
+  oauthMethodHelp: 'ใช้ GitHub OAuth เมื่อองค์กรอนุมัติ OAuth app แล้ว และ backend มี GitHub client credentials',
+  patMethod: 'Fine-grained PAT',
+  patMethodHelp: 'ใช้ fine-grained personal access token สำหรับ local development หรือ repo ที่ token ของคุณมีสิทธิ์เข้าถึงแล้ว',
   connectPat: 'เชื่อมต่อด้วย fine-grained token',
   githubPat: 'Fine-grained personal access token',
   githubPatPlaceholder: 'github_pat_...',
@@ -23,6 +28,7 @@ export const th = {
   copy: 'คัดลอก',
   copied: 'คัดลอกแล้ว',
   noHistory: 'ยังไม่มีประวัติการรีวิว',
+  themeMode: 'โหมดธีม',
   prPlaceholder: 'https://github.com/owner/repo/pull/123',
   loginRequired: 'เชื่อมต่อ GitHub ก่อนรีวิว pull request'
 };

@@ -1,7 +1,7 @@
 import { PropsWithChildren, useState } from 'react';
-import { Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { buildTheme } from '../theme/theme';
+import { useAppTheme } from '../theme/theme-context';
 
 type Props = PropsWithChildren<{
   title: string;
@@ -11,7 +11,7 @@ type Props = PropsWithChildren<{
 
 export function Section({ title, count, defaultOpen, children }: Props) {
   const [open, setOpen] = useState(Boolean(defaultOpen));
-  const colors = buildTheme(useColorScheme() === 'dark');
+  const { colors } = useAppTheme();
 
   return (
     <View style={[styles.section, { borderColor: colors.border, backgroundColor: colors.surface }]}>
