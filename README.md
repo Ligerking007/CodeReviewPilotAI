@@ -66,6 +66,18 @@ Required repository permissions for the GitHub app/OAuth flow:
 
 For GitHub App installation tokens, set `GITHUB_APP_ID`, `GITHUB_APP_PRIVATE_KEY`, and `GITHUB_APP_WEBHOOK_SECRET`. The backend includes `GithubAppService` for creating app JWTs and installation access tokens.
 
+## Fine-Grained Personal Access Token
+
+For local development or users who do not want to configure OAuth, the app also supports GitHub fine-grained personal access tokens.
+
+Create a token at GitHub Developer Settings with repository permissions:
+
+- Metadata: Read
+- Contents: Read
+- Pull requests: Read
+
+Then use the frontend "Fine-grained personal access token" form. The token is sent to the backend once, validated with GitHub, encrypted with AES-256-GCM, and stored server-side. The mobile app only stores the app JWT.
+
 ## API Flow
 
 1. Mobile opens `GET /auth/github`.

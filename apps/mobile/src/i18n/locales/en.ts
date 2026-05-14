@@ -2,6 +2,11 @@ export const en = {
   appName: 'CodeReviewPilot AI',
   subtitle: 'AI pull request reviews for teams that ship carefully.',
   loginGithub: 'Login with GitHub',
+  connectPat: 'Connect with fine-grained token',
+  githubPat: 'Fine-grained personal access token',
+  githubPatPlaceholder: 'github_pat_...',
+  githubPatSaved: 'GitHub token connected.',
+  githubPatHelp: 'Required repository permissions: Metadata read, Contents read, Pull requests read.',
   logout: 'Logout',
   pastePr: 'Paste GitHub Pull Request URL',
   review: 'Review PR',
@@ -19,5 +24,5 @@ export const en = {
   copied: 'Copied',
   noHistory: 'No review history yet.',
   prPlaceholder: 'https://github.com/owner/repo/pull/123',
-  loginRequired: 'Login with GitHub before reviewing private repositories.'
+  loginRequired: 'Connect GitHub before reviewing pull requests.'
 };

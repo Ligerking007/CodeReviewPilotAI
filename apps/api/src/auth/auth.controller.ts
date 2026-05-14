@@ -1,7 +1,14 @@
-import { Controller, Get, HttpCode, Query, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Query, Res } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { IsString, MinLength } from 'class-validator';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
+
+class GithubTokenLoginDto {
+  @IsString()
+  @MinLength(20)
+  token!: string;
+}
 
 @Controller('auth')
 export class AuthController {
@@ -72,6 +79,11 @@ export class AuthController {
     const redirectUrl = new URL(this.config.getOrThrow<string>('APP_WEB_REDIRECT_URL'));
     redirectUrl.searchParams.set('token', appToken);
     response.redirect(redirectUrl.toString());
+  }
+
+  @Post('github-token')
+  async loginWithGithubToken(@Body() body: GithubTokenLoginDto) {
+    return this.auth.loginWithGithubToken(body.token.trim());
   }
 
   @HttpCode(204)
