@@ -21,6 +21,6 @@ import { TokenCryptoService } from './token-crypto.service';
   ],
   controllers: [AuthController],
   providers: [AuthService, TokenCryptoService, JwtAuthGuard],
-  exports: [AuthService, JwtAuthGuard, TokenCryptoService]
+  exports: [AuthService, JwtAuthGuard, TokenCryptoService, JwtModule]
 })
 export class AuthModule {}
