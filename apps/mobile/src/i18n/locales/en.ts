@@ -1,7 +1,12 @@
 export const en = {
   appName: 'CodeReviewPilot AI',
   subtitle: 'AI pull request reviews for teams that ship carefully.',
+  connectGithub: 'Connect GitHub',
   loginGithub: 'Login with GitHub',
+  oauthMethod: 'OAuth',
+  oauthMethodHelp: 'Use GitHub OAuth when your organization has approved the OAuth app. Requires backend GitHub client credentials.',
+  patMethod: 'Fine-grained PAT',
+  patMethodHelp: 'Use a fine-grained personal access token for local development or repositories where you already have token access.',
   connectPat: 'Connect with fine-grained token',
   githubPat: 'Fine-grained personal access token',
   githubPatPlaceholder: 'github_pat_...',
