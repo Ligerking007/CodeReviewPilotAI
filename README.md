@@ -78,6 +78,16 @@ Create a token at GitHub Developer Settings with repository permissions:
 
 Then use the frontend "Fine-grained personal access token" form. The token is sent to the backend once, validated with GitHub, encrypted with AES-256-GCM, and stored server-side. The mobile app only stores the app JWT.
 
+## Local GitHub CLI Auth
+
+For local development only, the frontend also supports "Local CLI" login. The backend runs:
+
+```bash
+gh auth token
+```
+
+and uses that GitHub CLI token to create an app session. This gives the app the same GitHub identity as the machine running the backend. Do not use this as a production authentication method.
+
 ## API Flow
 
 1. Mobile opens `GET /auth/github`.

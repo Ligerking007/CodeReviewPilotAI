@@ -1,7 +1,11 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { execFile } from 'child_process';
+import { promisify } from 'util';
 import { UsersService } from '../users/users.service';
 import { TokenCryptoService } from './token-crypto.service';
+
+const execFileAsync = promisify(execFile);
 
 export type GithubProfile = {
   githubUserId: string;
@@ -71,5 +75,22 @@ export class AuthService {
       accessToken,
       scopes: scopes?.length ? scopes : ['fine-grained-personal-access-token']
     });
+  }
+
+  async loginWithGithubCli() {
+    let stdout: string;
+    try {
+      const result = await execFileAsync('gh', ['auth', 'token'], { timeout: 5000 });
+      stdout = result.stdout;
+    } catch {
+      throw new InternalServerErrorException('GitHub CLI auth is unavailable. Install gh and run `gh auth login` on this machine.');
+    }
+
+    const accessToken = stdout.trim();
+    if (!accessToken) {
+      throw new UnauthorizedException('GitHub CLI returned an empty token. Run `gh auth login` on this machine.');
+    }
+
+    return this.loginWithGithubToken(accessToken);
   }
 }
