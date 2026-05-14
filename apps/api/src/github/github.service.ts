@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { TokenCryptoService } from '../auth/token-crypto.service';
 import { UsersService } from '../users/users.service';
 import { GithubChangedFile, GithubCommit, GithubPullRequest } from './github.types';
@@ -54,10 +54,35 @@ export class GithubService {
     }
 
     if (!response.ok) {
-      throw new Error(`GitHub API failed with ${response.status}`);
+      await this.throwGithubError(response);
     }
 
     return (await response.json()) as T;
+  }
+
+  private async throwGithubError(response: Response): Promise<never> {
+    const payload = (await response.json().catch(() => undefined)) as { message?: string; documentation_url?: string } | undefined;
+    const message = payload?.message ?? `GitHub API failed with ${response.status}`;
+    const documentation = payload?.documentation_url ? ` See: ${payload.documentation_url}` : '';
+
+    if (response.status === 403) {
+      const remaining = response.headers.get('x-ratelimit-remaining');
+      const reset = response.headers.get('x-ratelimit-reset');
+      const rateLimit =
+        remaining === '0' && reset
+          ? ` GitHub rate limit resets at ${new Date(Number(reset) * 1000).toISOString()}.`
+          : '';
+
+      throw new ForbiddenException(
+        `${message}.${rateLimit}${documentation} For private repositories, check that your fine-grained token has access to this repository and permissions: Metadata read, Contents read, Pull requests read. If the repository is in an organization, authorize SSO for the token.`
+      );
+    }
+
+    if (response.status === 429) {
+      throw new HttpException(`${message}.${documentation}`, HttpStatus.TOO_MANY_REQUESTS);
+    }
+
+    throw new Error(`${message}.${documentation}`);
   }
 
   private githubRequest(path: string, token?: string) {
