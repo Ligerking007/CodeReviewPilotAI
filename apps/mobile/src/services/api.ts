@@ -23,6 +23,19 @@ export async function loginWithGithubToken(githubToken: string): Promise<{ appTo
   return (await response.json()) as { appToken: string };
 }
 
+export async function loginWithGithubCli(): Promise<{ appToken: string }> {
+  const response = await fetch(`${API_URL}/auth/github-cli`, {
+    method: 'POST'
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(text || `API failed with ${response.status}`);
+  }
+
+  return (await response.json()) as { appToken: string };
+}
+
 export async function createReview(token: string, prUrl: string, language: 'en' | 'th'): Promise<ReviewResponse> {
   const response = await fetch(`${API_URL}/ai-review/reviews`, {
     method: 'POST',

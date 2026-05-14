@@ -86,6 +86,11 @@ export class AuthController {
     return this.auth.loginWithGithubToken(body.token.trim());
   }
 
+  @Post('github-cli')
+  async loginWithGithubCli() {
+    return this.auth.loginWithGithubCli();
+  }
+
   @HttpCode(204)
   @Get('logout')
   logout() {

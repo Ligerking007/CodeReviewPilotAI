@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import i18n from '../i18n';
 import { Button } from '../components/Button';
 import { Screen } from '../components/Screen';
-import { createReview, loginWithGithubToken } from '../services/api';
+import { createReview, loginWithGithubCli, loginWithGithubToken } from '../services/api';
 import { saveLocalReview } from '../services/storage';
 import { useAuth } from '../store/auth-context';
 import { useAppTheme } from '../theme/theme-context';
@@ -14,7 +14,7 @@ import { RootStackParamList } from '../types/navigation';
 import { isValidPullRequestUrl } from '../utils/pr-url';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
-type LoginMethod = 'oauth' | 'pat';
+type LoginMethod = 'oauth' | 'pat' | 'cli';
 
 export function HomeScreen({ navigation }: Props) {
   const { t } = useTranslation();
@@ -25,6 +25,7 @@ export function HomeScreen({ navigation }: Props) {
   const [loginMethod, setLoginMethod] = useState<LoginMethod>('pat');
   const [loading, setLoading] = useState(false);
   const [patLoading, setPatLoading] = useState(false);
+  const [cliLoading, setCliLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const language = i18n.language === 'th' ? 'th' : 'en';
@@ -65,6 +66,21 @@ export function HomeScreen({ navigation }: Props) {
       setError(err instanceof Error ? err.message : 'GitHub token connection failed');
     } finally {
       setPatLoading(false);
+    }
+  }
+
+  async function onConnectCli() {
+    setCliLoading(true);
+    setError(null);
+    setNotice(null);
+    try {
+      const result = await loginWithGithubCli();
+      await setSessionToken(result.appToken);
+      setNotice(t('githubCliSaved'));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'GitHub CLI connection failed');
+    } finally {
+      setCliLoading(false);
     }
   }
 
@@ -118,7 +134,7 @@ export function HomeScreen({ navigation }: Props) {
         <View style={[styles.panel, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Text style={[styles.label, { color: colors.text }]}>{t('connectGithub')}</Text>
           <View style={[styles.segmented, { borderColor: colors.border, backgroundColor: colors.codeBackground }]}>
-            {(['pat', 'oauth'] as LoginMethod[]).map((method) => {
+            {(['pat', 'oauth', 'cli'] as LoginMethod[]).map((method) => {
               const active = loginMethod === method;
               return (
                 <Pressable
@@ -132,7 +148,7 @@ export function HomeScreen({ navigation }: Props) {
                   style={[styles.segment, { backgroundColor: active ? colors.accent : 'transparent' }]}
                 >
                   <Text style={[styles.segmentText, { color: active ? '#fff' : colors.text }]}>
-                    {method === 'pat' ? t('patMethod') : t('oauthMethod')}
+                    {method === 'pat' ? t('patMethod') : method === 'oauth' ? t('oauthMethod') : t('cliMethod')}
                   </Text>
                 </Pressable>
               );
@@ -153,16 +169,22 @@ export function HomeScreen({ navigation }: Props) {
               />
               <Text style={[styles.help, { color: colors.muted }]}>{t('githubPatHelp')}</Text>
             </>
-          ) : (
+          ) : loginMethod === 'oauth' ? (
             <Text style={[styles.help, { color: colors.muted }]}>{t('oauthMethodHelp')}</Text>
+          ) : (
+            <Text style={[styles.help, { color: colors.muted }]}>{t('cliMethodHelp')}</Text>
           )}
           <View style={styles.buttonRow}>
             {loginMethod === 'pat' ? (
               <Button onPress={onConnectPat} loading={patLoading} disabled={!githubPat.trim()}>
                 {t('connectPat')}
               </Button>
-            ) : (
+            ) : loginMethod === 'oauth' ? (
               <Button onPress={login}>{t('loginGithub')}</Button>
+            ) : (
+              <Button onPress={onConnectCli} loading={cliLoading}>
+                {t('connectCli')}
+              </Button>
             )}
           </View>
         </View>
