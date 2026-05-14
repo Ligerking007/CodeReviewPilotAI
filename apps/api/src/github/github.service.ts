@@ -40,16 +40,17 @@ export class GithubService {
   }
 
   private async githubFetch<T>(token: string, path: string): Promise<T> {
-    const response = await fetch(`https://api.github.com${path}`, {
-      headers: {
-        authorization: `Bearer ${token}`,
-        accept: 'application/vnd.github+json',
-        'x-github-api-version': '2022-11-28'
-      }
-    });
+    const response = await this.githubRequest(path, token);
 
     if (response.status === 404) {
-      throw new NotFoundException('GitHub resource not found or not accessible');
+      const publicResponse = await this.githubRequest(path);
+      if (publicResponse.ok) {
+        return (await publicResponse.json()) as T;
+      }
+
+      throw new NotFoundException(
+        'GitHub pull request was not found or your token cannot access this repository. Check the PR URL and fine-grained token permissions: Metadata read, Contents read, Pull requests read.'
+      );
     }
 
     if (!response.ok) {
@@ -57,5 +58,15 @@ export class GithubService {
     }
 
     return (await response.json()) as T;
+  }
+
+  private githubRequest(path: string, token?: string) {
+    return fetch(`https://api.github.com${path}`, {
+      headers: {
+        ...(token ? { authorization: `Bearer ${token}` } : {}),
+        accept: 'application/vnd.github+json',
+        'x-github-api-version': '2022-11-28'
+      }
+    });
   }
 }
