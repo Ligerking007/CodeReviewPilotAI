@@ -6,6 +6,7 @@ import { PrismaModule } from './common/prisma.module';
 import { GithubModule } from './github/github.module';
 import { HistoryModule } from './history/history.module';
 import { UsersModule } from './users/users.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { UsersModule } from './users/users.module';
     GithubModule,
     AiReviewModule,
     HistoryModule
-  ]
+  ],
+  controllers: [AppController]
 })
 export class AppModule {}
