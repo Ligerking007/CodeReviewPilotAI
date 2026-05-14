@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String          @id @default(cuid())
+  email          String?
+  name           String?
+  avatarUrl      String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  githubAccounts GithubAccount[]
+  reviewHistory  ReviewHistory[]
+
+  @@map("users")
+}
+
+model GithubAccount {
+  id                   String   @id @default(cuid())
+  userId               String
+  githubUserId         String   @unique
+  username             String
+  encryptedAccessToken String
+  tokenIv              String
+  tokenAuthTag         String
+  scopes               String[]
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("github_accounts")
+}
+
+model GithubInstallation {
+  id             String   @id @default(cuid())
+  installationId String   @unique
+  accountLogin   String
+  accountType    String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("github_installations")
+}
+
+model ReviewHistory {
+  id            String         @id @default(cuid())
+  userId        String
+  prUrl         String
+  owner         String
+  repo          String
+  prNumber      Int
+  title         String
+  repositoryUrl String
+  createdAt     DateTime       @default(now())
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  result        ReviewResult?
+
+  @@index([userId, createdAt])
+  @@map("review_history")
+}
+
+model ReviewResult {
+  id        String        @id @default(cuid())
+  historyId String        @unique
+  model     String
+  language  String
+  result    Json
+  createdAt DateTime      @default(now())
+  history   ReviewHistory @relation(fields: [historyId], references: [id], onDelete: Cascade)
+
+  @@map("review_results")
+}

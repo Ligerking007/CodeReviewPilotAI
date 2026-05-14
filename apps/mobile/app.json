@@ -1,0 +1,26 @@
+{
+  "expo": {
+    "name": "CodeReviewPilot AI",
+    "slug": "codereviewpilot-ai",
+    "scheme": "codereviewpilot",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#0d1117"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "ai.codereviewpilot.app"
+    },
+    "android": {
+      "package": "ai.codereviewpilot.app"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    }
+  }
+}

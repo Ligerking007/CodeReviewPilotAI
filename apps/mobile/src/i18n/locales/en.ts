@@ -1,0 +1,23 @@
+export const en = {
+  appName: 'CodeReviewPilot AI',
+  subtitle: 'AI pull request reviews for teams that ship carefully.',
+  loginGithub: 'Login with GitHub',
+  logout: 'Logout',
+  pastePr: 'Paste GitHub Pull Request URL',
+  review: 'Review PR',
+  reviewing: 'Reviewing...',
+  history: 'History',
+  language: 'Language',
+  invalidToken: 'Authentication failed. Please login again.',
+  summary: 'Summary',
+  criticalIssues: 'Critical Issues',
+  suggestions: 'Suggestions',
+  security: 'Security',
+  performance: 'Performance',
+  bestPractices: 'Best Practices',
+  copy: 'Copy',
+  copied: 'Copied',
+  noHistory: 'No review history yet.',
+  prPlaceholder: 'https://github.com/owner/repo/pull/123',
+  loginRequired: 'Login with GitHub before reviewing private repositories.'
+};
