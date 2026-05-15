@@ -1,5 +1,7 @@
+import { appInfo } from '../../constants/app-info';
+
 export const th = {
-  appName: 'CodeReviewPilot AI',
+  appName: 'ผู้ช่วยรีวิวโค้ดอัจฉริยะ',
   subtitle: 'รีวิว Pull Request ด้วย AI สำหรับทีมที่ต้องการส่งงานอย่างรอบคอบ',
   connectGithub: 'เชื่อมต่อ GitHub',
   loginGithub: 'เข้าสู่ระบบด้วย GitHub',
@@ -23,6 +25,7 @@ export const th = {
   history: 'ประวัติ',
   language: 'ภาษา',
   invalidToken: 'เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่',
+  githubUserNotAllowed: `บัญชี GitHub นี้ไม่ได้รับอนุญาตให้ใช้ ${appInfo.name}`,
   summary: 'สรุป',
   criticalIssues: 'ประเด็นร้ายแรง',
   suggestions: 'คำแนะนำ',
@@ -33,6 +36,9 @@ export const th = {
   copied: 'คัดลอกแล้ว',
   noHistory: 'ยังไม่มีประวัติการรีวิว',
   themeMode: 'โหมดธีม',
+  releaseNotes: 'บันทึกการเปลี่ยนแปลง',
+  appVersion: 'เวอร์ชันแอป',
+  developer: 'ผู้พัฒนา',
   prPlaceholder: 'https://github.com/owner/repo/pull/123',
   loginRequired: 'เชื่อมต่อ GitHub ก่อนรีวิว pull request'
 };

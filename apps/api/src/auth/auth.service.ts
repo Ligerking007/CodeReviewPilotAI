@@ -1,8 +1,10 @@
-import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { UsersService } from '../users/users.service';
+import { isGithubUsernameAllowed } from './github-allowlist';
 import { TokenCryptoService } from './token-crypto.service';
 
 const execFileAsync = promisify(execFile);
@@ -20,12 +22,16 @@ export type GithubProfile = {
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly config: ConfigService,
     private readonly users: UsersService,
     private readonly jwt: JwtService,
     private readonly tokenCrypto: TokenCryptoService
   ) {}
 
   async loginWithGithub(profile: GithubProfile) {
+    // Enforce access before token persistence so disallowed users never create a stored GitHub account link.
+    this.assertGithubUsernameAllowed(profile.username);
+
     const encrypted = this.tokenCrypto.encrypt(profile.accessToken);
     const user = await this.users.upsertGithubUser({
       ...profile,
@@ -38,6 +44,14 @@ export class AuthService {
     });
 
     return { appToken, user };
+  }
+
+  private assertGithubUsernameAllowed(username: string) {
+    const allowlist = this.config.get<string>('GITHUB_ALLOWED_USERNAMES');
+
+    if (!isGithubUsernameAllowed(username, allowlist)) {
+      throw new ForbiddenException('This GitHub account is not allowed to use CodeReviewPilot AI.');
+    }
   }
 
   async loginWithGithubToken(accessToken: string) {

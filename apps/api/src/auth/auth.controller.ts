@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Post, Query, Res } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Get, HttpCode, Post, Query, Res } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IsString, MinLength } from 'class-validator';
 import { Response } from 'express';
@@ -66,15 +66,26 @@ export class AuthController {
       avatar_url?: string;
     };
 
-    const { appToken } = await this.auth.loginWithGithub({
-      githubUserId: String(profile.id),
-      username: profile.login,
-      name: profile.name,
-      email: profile.email,
-      avatarUrl: profile.avatar_url,
-      accessToken: tokenJson.access_token,
-      scopes: tokenJson.scope?.split(',').filter(Boolean) ?? []
-    });
+    let appToken: string;
+    try {
+      const result = await this.auth.loginWithGithub({
+        githubUserId: String(profile.id),
+        username: profile.login,
+        name: profile.name,
+        email: profile.email,
+        avatarUrl: profile.avatar_url,
+        accessToken: tokenJson.access_token,
+        scopes: tokenJson.scope?.split(',').filter(Boolean) ?? []
+      });
+      appToken = result.appToken;
+    } catch (error) {
+      if (error instanceof ForbiddenException) {
+        response.redirect(`${this.config.getOrThrow<string>('APP_WEB_REDIRECT_URL')}?error=github_user_not_allowed`);
+        return;
+      }
+
+      throw error;
+    }
 
     const redirectUrl = new URL(this.config.getOrThrow<string>('APP_WEB_REDIRECT_URL'));
     redirectUrl.searchParams.set('token', appToken);
