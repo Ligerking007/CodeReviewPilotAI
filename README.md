@@ -105,9 +105,11 @@ The API also applies a global IP-based rate limit. Defaults are `120` requests p
 ```env
 RATE_LIMIT_TTL_MS=60000
 RATE_LIMIT_MAX=120
+AI_REVIEW_RATE_LIMIT_TTL_MS=3600000
+AI_REVIEW_RATE_LIMIT_MAX=5
 ```
 
-AI review creation is additionally limited to 5 requests per hour per client IP because it calls OpenAI.
+AI review creation uses `AI_REVIEW_RATE_LIMIT_MAX` and `AI_REVIEW_RATE_LIMIT_TTL_MS` because it calls OpenAI.
 
 ## API Flow
 
@@ -138,7 +140,4 @@ Mobile
 
 
 
-
-
- 
 
