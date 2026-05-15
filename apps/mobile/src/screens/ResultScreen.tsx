@@ -19,6 +19,84 @@ export function ResultScreen({ route, navigation }: Props) {
   const { colors } = useAppTheme();
   const { review } = route.params;
   const [copied, setCopied] = useState(false);
+  const markdownStyles = {
+    body: { color: colors.text, fontSize: 15, lineHeight: 22 },
+    heading1: {
+      color: colors.text,
+      fontSize: 22,
+      lineHeight: 28,
+      fontWeight: '800',
+      marginTop: 0,
+      marginBottom: 12
+    },
+    heading2: {
+      color: colors.text,
+      fontSize: 18,
+      lineHeight: 24,
+      fontWeight: '800',
+      marginTop: 18,
+      marginBottom: 8
+    },
+    heading3: {
+      color: colors.text,
+      fontSize: 16,
+      lineHeight: 22,
+      fontWeight: '800',
+      marginTop: 14,
+      marginBottom: 6
+    },
+    paragraph: {
+      color: colors.text,
+      marginTop: 0,
+      marginBottom: 10,
+      lineHeight: 22
+    },
+    bullet_list: { marginBottom: 8 },
+    ordered_list: { marginBottom: 8 },
+    list_item: { marginBottom: 6 },
+    bullet_list_icon: { color: colors.muted, marginRight: 8 },
+    ordered_list_icon: { color: colors.muted, marginRight: 8 },
+    strong: { fontWeight: '800' },
+    code_inline: {
+      backgroundColor: colors.codeBackground,
+      color: colors.text,
+      borderColor: colors.border,
+      borderWidth: 1,
+      borderRadius: 4,
+      fontFamily: 'Courier',
+      fontSize: 13,
+      lineHeight: 18,
+      padding: 0,
+      paddingHorizontal: 4,
+      paddingVertical: 1
+    },
+    fence: {
+      backgroundColor: colors.codeBackground,
+      color: colors.text,
+      borderColor: colors.border,
+      borderWidth: 1,
+      borderRadius: 6,
+      fontFamily: 'Courier',
+      fontSize: 13,
+      lineHeight: 19,
+      padding: 12,
+      marginTop: 8,
+      marginBottom: 12
+    },
+    code_block: {
+      backgroundColor: colors.codeBackground,
+      color: colors.text,
+      borderColor: colors.border,
+      borderWidth: 1,
+      borderRadius: 6,
+      fontFamily: 'Courier',
+      fontSize: 13,
+      lineHeight: 19,
+      padding: 12,
+      marginTop: 8,
+      marginBottom: 12
+    }
+  } as const;
 
   async function copyMarkdown() {
     await Clipboard.setStringAsync(review.result.markdown);
@@ -29,12 +107,19 @@ export function ResultScreen({ route, navigation }: Props) {
   return (
     <Screen>
       <View style={styles.header}>
-        <Pressable style={[styles.backButton, { borderColor: colors.border }]} onPress={() => navigation.goBack()}>
+        <Pressable
+          style={[styles.backButton, { borderColor: colors.border }]}
+          onPress={() => navigation.goBack()}
+        >
           <Ionicons name="arrow-back" size={18} color={colors.text} />
         </Pressable>
         <View style={styles.titleBlock}>
-          <Text style={[styles.title, { color: colors.text }]}>{review.title}</Text>
-          <Text style={[styles.url, { color: colors.muted }]}>{review.prUrl}</Text>
+          <Text style={[styles.title, { color: colors.text }]}>
+            {review.title}
+          </Text>
+          <Text style={[styles.url, { color: colors.muted }]}>
+            {review.prUrl}
+          </Text>
         </View>
         <Button onPress={copyMarkdown} variant="secondary">
           {copied ? t('copied') : t('copy')}
@@ -42,7 +127,9 @@ export function ResultScreen({ route, navigation }: Props) {
       </View>
 
       <Section title={t('summary')} defaultOpen>
-        <Text style={[styles.summary, { color: colors.text }]}>{review.result.summary}</Text>
+        <Text style={[styles.summary, { color: colors.text }]}>
+          {review.result.summary}
+        </Text>
       </Section>
 
       {[
@@ -52,17 +139,25 @@ export function ResultScreen({ route, navigation }: Props) {
         ['performance', review.result.performance],
         ['bestPractices', review.result.bestPractices]
       ].map(([key, issues]) => (
-        <Section key={key as string} title={t(key as string)} count={(issues as typeof review.result.suggestions).length} defaultOpen={key === 'criticalIssues'}>
+        <Section
+          key={key as string}
+          title={t(key as string)}
+          count={(issues as typeof review.result.suggestions).length}
+          defaultOpen={key === 'criticalIssues'}
+        >
           {(issues as typeof review.result.suggestions).map((issue, index) => (
             <IssueCard key={`${issue.title}-${index}`} issue={issue} />
           ))}
         </Section>
       ))}
 
-      <View style={[styles.markdownPanel, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-        <Markdown style={{ body: { color: colors.text }, code_inline: { backgroundColor: colors.codeBackground, color: colors.text } }}>
-          {review.result.markdown}
-        </Markdown>
+      <View
+        style={[
+          styles.markdownPanel,
+          { backgroundColor: colors.surface, borderColor: colors.border }
+        ]}
+      >
+        <Markdown style={markdownStyles}>{review.result.markdown}</Markdown>
       </View>
     </Screen>
   );
@@ -70,7 +165,14 @@ export function ResultScreen({ route, navigation }: Props) {
 
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', gap: 12, alignItems: 'flex-start' },
-  backButton: { width: 44, height: 44, borderRadius: 8, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
+  backButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 8,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
   titleBlock: { flex: 1, gap: 6 },
   title: { fontSize: 24, fontWeight: '800' },
   url: { fontSize: 13 },

@@ -2,7 +2,6 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import i18n from '../i18n';
 import { Button } from '../components/Button';
 import { Screen } from '../components/Screen';
@@ -18,7 +17,7 @@ type LoginMethod = 'oauth' | 'pat' | 'cli';
 
 export function HomeScreen({ navigation }: Props) {
   const { t } = useTranslation();
-  const { colors, mode, cycleMode } = useAppTheme();
+  const { colors } = useAppTheme();
   const { token, login, logout, setSessionToken } = useAuth();
   const [prUrl, setPrUrl] = useState('');
   const [githubPat, setGithubPat] = useState('');
@@ -86,24 +85,6 @@ export function HomeScreen({ navigation }: Props) {
 
   return (
     <Screen>
-      <View style={styles.header}>
-        <View>
-          <Text style={[styles.title, { color: colors.text }]}>{t('appName')}</Text>
-          <Text style={[styles.subtitle, { color: colors.muted }]}>{t('subtitle')}</Text>
-        </View>
-        <View style={styles.actions}>
-          <Pressable accessibilityLabel={t('themeMode')} style={[styles.iconButton, { borderColor: colors.border }]} onPress={cycleMode}>
-            <Ionicons name={mode === 'dark' ? 'moon' : mode === 'light' ? 'sunny' : 'phone-portrait-outline'} size={20} color={colors.text} />
-          </Pressable>
-          <Pressable style={[styles.iconButton, { borderColor: colors.border }]} onPress={() => i18n.changeLanguage(language === 'en' ? 'th' : 'en')}>
-            <Text style={[styles.iconButtonText, { color: colors.text }]}>{language.toUpperCase()}</Text>
-          </Pressable>
-          <Pressable style={[styles.iconButton, { borderColor: colors.border }]} onPress={() => navigation.navigate('History')}>
-            <Ionicons name="time-outline" size={20} color={colors.text} />
-          </Pressable>
-        </View>
-      </View>
-
       <View style={[styles.panel, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <Text style={[styles.label, { color: colors.text }]}>{t('pastePr')}</Text>
         <TextInput
@@ -194,12 +175,6 @@ export function HomeScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: 'row', justifyContent: 'space-between', gap: 16, alignItems: 'flex-start' },
-  title: { fontSize: 34, fontWeight: '800' },
-  subtitle: { marginTop: 8, fontSize: 16, lineHeight: 22, maxWidth: 560 },
-  actions: { flexDirection: 'row', gap: 8 },
-  iconButton: { width: 44, height: 44, borderWidth: 1, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  iconButtonText: { fontWeight: '800' },
   panel: { borderWidth: 1, borderRadius: 8, padding: 18, gap: 12 },
   label: { fontSize: 15, fontWeight: '700' },
   input: { minHeight: 52, borderWidth: 1, borderRadius: 8, paddingHorizontal: 14, fontSize: 15 },
