@@ -122,3 +122,23 @@ AI review creation is additionally limited to 5 requests per hour per client IP 
 ```bash
 npm test
 ```
+ Web
+  <img width="800" height="552" alt="image" src="https://github.com/user-attachments/assets/c7c12b42-8e96-4b3d-be2f-7c60c5232710" />
+  <img width="800" height="558" alt="image" src="https://github.com/user-attachments/assets/59607896-c1a7-49d9-91a2-00c36073c18a" />
+  <img width="2004" height="1404" alt="image" src="https://github.com/user-attachments/assets/c1248296-612a-4982-9325-7355f3c5b724" />
+  <img width="2010" height="1412" alt="image" src="https://github.com/user-attachments/assets/b95c22ab-2e5c-4def-84bb-3a40d029a0ab" />
+<img width="2008" height="1006" alt="image" src="https://github.com/user-attachments/assets/3f4eaace-8795-4bdc-a791-eb8dfc43b75e" />
+
+Mobile
+<img width="450" height="954" alt="image" src="https://github.com/user-attachments/assets/a5de1c4c-4577-4274-b0f1-488e2483f17e" />
+<img width="484" height="968" alt="image" src="https://github.com/user-attachments/assets/d5c987ec-622f-442b-a803-7bbbb63f0199" />
+<img width="462" height="970" alt="image" src="https://github.com/user-attachments/assets/a6d9ac6a-e36e-44b2-85af-bed8173547e9" />
+
+
+
+
+
+
+
+ 
+
