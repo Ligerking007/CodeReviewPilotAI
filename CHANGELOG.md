@@ -4,6 +4,10 @@
 
 ### Added
 
+- Architecture diagrams and auth/token flow documentation in README and docs.
+- GitHub Actions CI for lint, test, API build, and mobile typecheck.
+- Docker Compose setup for PostgreSQL and the NestJS API.
+- Production security hardening notes for token encryption, JWT guards, allowlists, rate limits, HTTPS, Local CLI Auth, and frontend secrets.
 - GitHub username allowlist for restricting who can create app sessions.
 - Global backend rate limiting and stricter AI review generation throttling.
 - Shared app header with theme, language, and history shortcuts on every screen.

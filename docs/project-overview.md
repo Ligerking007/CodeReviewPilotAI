@@ -38,6 +38,16 @@ The project is organized as a monorepo with two main applications:
 - `apps/mobile`: React Native + Expo frontend for Android, iOS, and Web.
 - `apps/api`: NestJS backend API for authentication, GitHub integration, AI review, and persistence.
 
+```mermaid
+flowchart LR
+  User[Developer] --> Expo[Expo App\nAndroid / iOS / Web]
+  Expo -->|App JWT + PR URL| API[NestJS API]
+  API -->|User GitHub token| GitHub[GitHub API\nPR details / files / commits]
+  API -->|Review prompt| OpenAI[OpenAI API\ngpt-4.1-mini]
+  API -->|Users / tokens / history| DB[(PostgreSQL)]
+  API -->|Structured review JSON| Expo
+```
+
 The frontend uses a shared app shell with a gradient header, browser page titles such as `Home - CodeReviewPilot AI`, language/theme/history actions, and a Home screen metadata panel that shows app version, developer name, and collapsible release notes.
 
 Backend modules:

@@ -1,0 +1,14 @@
+node_modules
+apps/*/node_modules
+apps/api/dist
+apps/mobile/.expo
+.expo
+.git
+.github
+coverage
+*.log
+.env
+.env.*
+!.env.example
+ios
+android

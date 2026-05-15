@@ -12,6 +12,7 @@ export const appInfo = {
         items: [
           'Added GitHub username allowlist to restrict who can create app sessions.',
           'Added backend rate limiting, including stricter throttling for AI review generation.',
+          'Added architecture diagrams, CI/CD, Docker Compose, and production security notes.',
           'Added release notes, app version, and developer information to the Home screen.',
           'Added unit tests for app metadata and session token username parsing.',
           'Added a gradient app header and GitHub username display beside Logout.',
@@ -72,6 +73,7 @@ export const appInfo = {
         items: [
           'เพิ่ม GitHub username allowlist เพื่อจำกัดว่าใครสามารถสร้าง session เข้าใช้งานระบบได้',
           'เพิ่ม rate limit ฝั่ง backend รวมถึงจำกัดการเรียก AI review ให้เข้มขึ้น',
+          'เพิ่ม architecture diagram, CI/CD, Docker Compose และ production security notes',
           'เพิ่ม Release Notes, App Version และ Developer บนหน้า Home',
           'เพิ่ม unit test สำหรับข้อมูลแอปและการอ่าน GitHub username จาก session token',
           'เพิ่ม header แบบไล่สีและแสดง GitHub username ข้างปุ่ม Logout',

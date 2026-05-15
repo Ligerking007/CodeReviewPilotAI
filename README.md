@@ -25,6 +25,25 @@ For versioned product changes, see [CHANGELOG.md](CHANGELOG.md).
 - Dark/light mode, a shared gradient app header, and browser tab titles like `Home - CodeReviewPilot AI`.
 - Backend GitHub username allowlist and rate limiting for safer shared deployments.
 
+## Architecture
+
+```mermaid
+flowchart LR
+  User[Developer] --> Expo[Expo App\nAndroid / iOS / Web]
+  Expo -->|App JWT + PR URL| API[NestJS API]
+  API -->|User GitHub token| GitHub[GitHub API\nPR details / files / commits]
+  API -->|Review prompt| OpenAI[OpenAI API\ngpt-4.1-mini]
+  API -->|Users / tokens / history| DB[(PostgreSQL)]
+  API -->|Structured review JSON| Expo
+```
+
+Auth/token flow:
+
+1. The user signs in with GitHub OAuth, a fine-grained PAT, or Local GitHub CLI Auth for local development.
+2. The API validates the GitHub identity, applies the optional `GITHUB_ALLOWED_USERNAMES` allowlist, encrypts the GitHub token, and stores it server-side.
+3. The API returns an app JWT to the frontend. The GitHub token is never returned to the mobile/web app.
+4. Protected API calls send `Authorization: Bearer <app-jwt>`. The backend JWT guard resolves the user and uses the encrypted GitHub token only on the server.
+
 ## Requirements
 
 - Node.js 20+
@@ -54,6 +73,21 @@ Start the Expo app:
 ```bash
 npm run dev:mobile
 ```
+
+## Docker Compose
+
+Run PostgreSQL and the API together:
+
+```bash
+docker compose up --build
+```
+
+The compose file starts:
+
+- `postgres` on `localhost:5432`
+- `api` on `http://localhost:3000`
+
+The API container applies the Prisma schema with `prisma db push` on startup for local/demo convenience. Before using GitHub/OpenAI flows in Docker, replace the placeholder secrets in `docker-compose.yml` or pass them through your deployment environment. `GITHUB_TOKEN_ENCRYPTION_KEY` must be 32 bytes or a base64-encoded 32-byte value.
 
 ## GitHub OAuth
 
@@ -111,6 +145,16 @@ AI_REVIEW_RATE_LIMIT_MAX=5
 
 AI review creation uses `AI_REVIEW_RATE_LIMIT_MAX` and `AI_REVIEW_RATE_LIMIT_TTL_MS` because it calls OpenAI.
 
+## Production Security Considerations
+
+- Encrypt GitHub tokens before storing them. This project uses AES-256-GCM through `GITHUB_TOKEN_ENCRYPTION_KEY`.
+- Keep JWT guards on protected endpoints such as GitHub PR fetch, AI review creation, and history.
+- Use `GITHUB_ALLOWED_USERNAMES` or an organization check when the deployment should not be public.
+- Keep global and AI-review-specific rate limits enabled to reduce abuse and OpenAI cost exposure.
+- Serve production traffic only over HTTPS.
+- Disable Local GitHub CLI Auth in production; it is intended for local development on a trusted machine.
+- Never expose `OPENAI_API_KEY`, GitHub OAuth client secret, database credentials, or token encryption keys in frontend environment variables.
+
 ## API Flow
 
 1. Mobile opens `GET /auth/github`.
@@ -135,8 +179,6 @@ Mobile
 <img width="450" height="954" alt="image" src="https://github.com/user-attachments/assets/a5de1c4c-4577-4274-b0f1-488e2483f17e" />
 <img width="484" height="968" alt="image" src="https://github.com/user-attachments/assets/d5c987ec-622f-442b-a803-7bbbb63f0199" />
 <img width="462" height="970" alt="image" src="https://github.com/user-attachments/assets/a6d9ac6a-e36e-44b2-85af-bed8173547e9" />
-
-
 
 
 
