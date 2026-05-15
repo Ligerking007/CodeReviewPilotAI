@@ -4,9 +4,9 @@ services:
     container_name: codereviewpilot-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: codereviewpilot
-      POSTGRES_PASSWORD: codereviewpilot
-      POSTGRES_DB: codereviewpilot
+      POSTGRES_USER: ${POSTGRES_USER:-codereviewpilot}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-codereviewpilot}
+      POSTGRES_DB: ${POSTGRES_DB:-codereviewpilot}
     ports:
       - '5432:5432'
     volumes:
@@ -31,23 +31,36 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://codereviewpilot:codereviewpilot@postgres:5432/codereviewpilot?schema=public
-      JWT_SECRET: replace-with-a-long-random-secret
-      APP_WEB_REDIRECT_URL: http://localhost:8081/auth/callback
-      GITHUB_ALLOWED_USERNAMES: ''
-      RATE_LIMIT_TTL_MS: 60000
-      RATE_LIMIT_MAX: 120
-      AI_REVIEW_RATE_LIMIT_TTL_MS: 3600000
-      AI_REVIEW_RATE_LIMIT_MAX: 5
-      GITHUB_CLIENT_ID: ''
-      GITHUB_CLIENT_SECRET: ''
-      GITHUB_CALLBACK_URL: http://localhost:3000/auth/github/callback
-      GITHUB_TOKEN_ENCRYPTION_KEY: replace-with-32-byte-base64-key
-      OPENAI_API_KEY: ''
-      OPENAI_MODEL: gpt-4.1-mini
-      GITHUB_APP_ID: ''
-      GITHUB_APP_PRIVATE_KEY: ''
-      GITHUB_APP_WEBHOOK_SECRET: ''
+      DATABASE_URL: ${DATABASE_URL:-postgresql://codereviewpilot:codereviewpilot@postgres:5432/codereviewpilot?schema=public}
+      JWT_SECRET: ${JWT_SECRET}
+      APP_WEB_REDIRECT_URL: ${APP_WEB_REDIRECT_URL:-http://localhost:8081/auth/callback}
+      GITHUB_ALLOWED_USERNAMES: ${GITHUB_ALLOWED_USERNAMES:-}
+      RATE_LIMIT_TTL_MS: ${RATE_LIMIT_TTL_MS:-60000}
+      RATE_LIMIT_MAX: ${RATE_LIMIT_MAX:-120}
+      AI_REVIEW_RATE_LIMIT_TTL_MS: ${AI_REVIEW_RATE_LIMIT_TTL_MS:-3600000}
+      AI_REVIEW_RATE_LIMIT_MAX: ${AI_REVIEW_RATE_LIMIT_MAX:-5}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+      GITHUB_CALLBACK_URL: ${GITHUB_CALLBACK_URL:-http://localhost:3000/auth/github/callback}
+      GITHUB_TOKEN_ENCRYPTION_KEY: ${GITHUB_TOKEN_ENCRYPTION_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4.1-mini}
+      GITHUB_APP_ID: ${GITHUB_APP_ID:-}
+      GITHUB_APP_PRIVATE_KEY: ${GITHUB_APP_PRIVATE_KEY:-}
+      GITHUB_APP_WEBHOOK_SECRET: ${GITHUB_APP_WEBHOOK_SECRET:-}
+
+  mobile:
+    build:
+      context: .
+      dockerfile: apps/mobile/Dockerfile
+      args:
+        EXPO_PUBLIC_API_URL: ${EXPO_PUBLIC_API_URL:-http://localhost:3000}
+    container_name: codereviewpilot-mobile
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - '8081:80'
 
 volumes:
   postgres-data:

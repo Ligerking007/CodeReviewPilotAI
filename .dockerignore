@@ -1,6 +1,7 @@
 node_modules
 apps/*/node_modules
 apps/api/dist
+apps/mobile/dist
 apps/mobile/.expo
 .expo
 .git
