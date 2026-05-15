@@ -22,8 +22,9 @@ For versioned product changes, see [CHANGELOG.md](CHANGELOG.md).
 - Generate AI review sections: summary, critical issues, suggestions, security, performance, and best practices.
 - Store review history in the backend and locally on the device.
 - English and Thai UI with versioned release notes.
-- Dark/light mode, a shared gradient app header, and browser tab titles like `Home - CodeReviewPilot AI`.
+- Dark/light mode, a shared gradient app header, browser tab titles like `Home - CodeReviewPilot AI`, and a custom web favicon.
 - Backend GitHub username allowlist and rate limiting for safer shared deployments.
+- CI/CD with GitHub Actions that validates the monorepo and publishes API and mobile web Docker images to GitHub Container Registry.
 
 ## Architecture
 
@@ -76,9 +77,11 @@ npm run dev:mobile
 
 ## Docker Compose
 
-Run PostgreSQL and the API together:
+Run PostgreSQL, the API, and the Expo Web build together:
 
 ```bash
+cp .env.example .env
+# Fill the real secrets in .env before using GitHub/OpenAI flows.
 docker compose up --build
 ```
 
@@ -86,8 +89,39 @@ The compose file starts:
 
 - `postgres` on `localhost:5432`
 - `api` on `http://localhost:3000`
+- `mobile` on `http://localhost:8081`
 
-The API container applies the Prisma schema with `prisma db push` on startup for local/demo convenience. Before using GitHub/OpenAI flows in Docker, replace the placeholder secrets in `docker-compose.yml` or pass them through your deployment environment. `GITHUB_TOKEN_ENCRYPTION_KEY` must be 32 bytes or a base64-encoded 32-byte value.
+The API container applies the Prisma schema with `prisma db push` on startup for local/demo convenience. Runtime secrets are read from `.env` or the deployment environment, not baked into Docker images. `GITHUB_TOKEN_ENCRYPTION_KEY` must be 32 bytes or a base64-encoded 32-byte value.
+
+## Docker Images And CI/CD
+
+GitHub Actions runs `CI/CD` on pull requests and pushes to `main`.
+
+CI validates:
+
+- dependency installation with `npm ci`
+- Prisma client generation
+- API and mobile lint
+- API and mobile tests
+- API build
+- mobile TypeScript check
+
+CD runs only after a successful push to `main` and publishes:
+
+- `ghcr.io/ligerking007/codereviewpilotai-api`
+- `ghcr.io/ligerking007/codereviewpilotai-mobile`
+
+Both images are tagged as `latest` and with the commit SHA. GHCR is a container registry, not a hosting platform; a server or provider such as Render, Fly.io, Railway, or a VPS must pull and run the images with runtime environment variables.
+
+The mobile image builds Expo Web static files with `expo export --platform web` and serves them with Nginx. PostgreSQL uses the official `postgres:18-alpine` image from Docker Hub.
+
+For a real public deployment, replace local URLs with deployed domains:
+
+```env
+EXPO_PUBLIC_API_URL=https://api.example.com
+APP_WEB_REDIRECT_URL=https://app.example.com/auth/callback
+GITHUB_CALLBACK_URL=https://api.example.com/auth/github/callback
+```
 
 ## GitHub OAuth
 
@@ -168,18 +202,15 @@ AI review creation uses `AI_REVIEW_RATE_LIMIT_MAX` and `AI_REVIEW_RATE_LIMIT_TTL
 ```bash
 npm test
 ```
- Web
-  <img width="800" height="552" alt="image" src="https://github.com/user-attachments/assets/c7c12b42-8e96-4b3d-be2f-7c60c5232710" />
-  <img width="800" height="558" alt="image" src="https://github.com/user-attachments/assets/59607896-c1a7-49d9-91a2-00c36073c18a" />
-  <img width="2004" height="1404" alt="image" src="https://github.com/user-attachments/assets/c1248296-612a-4982-9325-7355f3c5b724" />
-  <img width="2010" height="1412" alt="image" src="https://github.com/user-attachments/assets/b95c22ab-2e5c-4def-84bb-3a40d029a0ab" />
+
+Web
+<img width="800" height="552" alt="image" src="https://github.com/user-attachments/assets/c7c12b42-8e96-4b3d-be2f-7c60c5232710" />
+<img width="800" height="558" alt="image" src="https://github.com/user-attachments/assets/59607896-c1a7-49d9-91a2-00c36073c18a" />
+<img width="2004" height="1404" alt="image" src="https://github.com/user-attachments/assets/c1248296-612a-4982-9325-7355f3c5b724" />
+<img width="2010" height="1412" alt="image" src="https://github.com/user-attachments/assets/b95c22ab-2e5c-4def-84bb-3a40d029a0ab" />
 <img width="2008" height="1006" alt="image" src="https://github.com/user-attachments/assets/3f4eaace-8795-4bdc-a791-eb8dfc43b75e" />
 
 Mobile
 <img width="450" height="954" alt="image" src="https://github.com/user-attachments/assets/a5de1c4c-4577-4274-b0f1-488e2483f17e" />
 <img width="484" height="968" alt="image" src="https://github.com/user-attachments/assets/d5c987ec-622f-442b-a803-7bbbb63f0199" />
 <img width="462" height="970" alt="image" src="https://github.com/user-attachments/assets/a6d9ac6a-e36e-44b2-85af-bed8173547e9" />
-
-
-
-

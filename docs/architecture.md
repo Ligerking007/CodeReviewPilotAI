@@ -25,7 +25,7 @@ flowchart LR
 
 ## Frontend
 
-The Expo app owns presentation, local settings, local history cache, authentication token storage, language selection, theme selection, and app metadata display.
+The Expo app owns presentation, local settings, local history cache, authentication token storage, language selection, theme selection, and app metadata display. For container deployment, the mobile app is exported as a static Expo Web build and served by Nginx.
 
 Key folders:
 
@@ -64,3 +64,22 @@ Prisma models:
 - `github_installations`
 
 GitHub tokens are encrypted before storage with AES-256-GCM.
+
+## Container Deployment
+
+Local Docker Compose runs three services:
+
+- `mobile`: Expo Web static files served by Nginx on `localhost:8081`.
+- `api`: NestJS API on `localhost:3000`.
+- `postgres`: PostgreSQL on `localhost:5432`.
+
+The API connects to PostgreSQL through the Docker network hostname `postgres`. The browser talks to the API through `EXPO_PUBLIC_API_URL`, which defaults to `http://localhost:3000` for local Compose.
+
+CI/CD publishes two project images to GitHub Container Registry after successful pushes to `main`:
+
+- `ghcr.io/ligerking007/codereviewpilotai-api`
+- `ghcr.io/ligerking007/codereviewpilotai-mobile`
+
+The database uses the official `postgres:18-alpine` image. GHCR stores images only; a runtime host must pull the images, provide secrets and environment variables, and run the containers.
+
+Runtime secrets such as `OPENAI_API_KEY`, `JWT_SECRET`, `GITHUB_CLIENT_SECRET`, and `GITHUB_TOKEN_ENCRYPTION_KEY` are passed through environment variables. They are not committed to Git and are not baked into Docker images.

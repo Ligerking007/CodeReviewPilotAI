@@ -48,7 +48,7 @@ flowchart LR
   API -->|Structured review JSON| Expo
 ```
 
-The frontend uses a shared app shell with a gradient header, browser page titles such as `Home - CodeReviewPilot AI`, language/theme/history actions, and a Home screen metadata panel that shows app version, developer name, and collapsible release notes.
+The frontend uses a shared app shell with a gradient header, browser page titles such as `Home - CodeReviewPilot AI`, a custom web favicon, language/theme/history actions, and a Home screen metadata panel that shows app version, developer name, and collapsible release notes.
 
 Backend modules:
 
@@ -143,6 +143,17 @@ The current flow uses GitHub OAuth first because it is straightforward for user-
 
 The frontend caches recent reviews locally for a faster user experience. The backend also stores review history so the data can be synced across devices.
 
+### Container Registry Versus Runtime Hosting
+
+The CI/CD pipeline publishes API and mobile web Docker images to GitHub Container Registry:
+
+- `ghcr.io/ligerking007/codereviewpilotai-api`
+- `ghcr.io/ligerking007/codereviewpilotai-mobile`
+
+GHCR stores versioned deployment artifacts, but it does not run the application. A hosting provider or server must pull those images, inject runtime secrets such as `OPENAI_API_KEY`, `JWT_SECRET`, and `DATABASE_URL`, and run the containers. PostgreSQL can run from the official `postgres:18-alpine` image for local demos or VPS deployments, but a managed database such as Neon, Supabase, Render PostgreSQL, or Railway PostgreSQL is a better fit for production.
+
+The mobile image is an Expo Web static export served by Nginx. The API image is a NestJS server. They are intentionally split so frontend, backend, and database lifecycles can be deployed, restarted, and scaled independently.
+
 ## What I Would Improve Next
 
 For a production version, I would add:
@@ -156,7 +167,7 @@ For a production version, I would add:
 - Observability with structured logs, tracing, and metrics.
 - Role-based access control for teams.
 - Integration tests with mocked GitHub and OpenAI APIs.
-- Docker Compose or infrastructure-as-code deployment setup.
+- Production deployment setup with managed PostgreSQL, hosted API, hosted frontend, and environment-specific domains.
 
 ## How To Explain This In An Interview
 
@@ -187,6 +198,7 @@ If asked about AI reliability:
 7. Open the backend folder and explain the NestJS module structure.
 8. Open the Prisma schema and explain the database design.
 9. Open the AI review service and explain prompt construction plus schema validation.
+10. Open the CI/CD workflow and Dockerfiles to show how the API and mobile web images are built and published.
 
 ## Key Files To Show
 
@@ -200,3 +212,7 @@ If asked about AI reliability:
 - `apps/mobile/src/screens/HomeScreen.tsx`: PR input flow.
 - `apps/mobile/src/screens/ResultScreen.tsx`: Review result UI.
 - `apps/mobile/src/i18n/locales/en.ts`: English translation support.
+- `apps/api/Dockerfile`: Production API image.
+- `apps/mobile/Dockerfile`: Expo Web static image served by Nginx.
+- `.github/workflows/ci-cd.yml`: CI validation and GHCR image publishing.
+- `docker-compose.yml`: Local three-service stack for mobile, API, and PostgreSQL.
