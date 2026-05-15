@@ -7,6 +7,8 @@ import { GithubService } from '../github/github.service';
 import { CreateReviewDto } from './dto';
 import { ReviewResult, reviewResultSchema } from './review-result.schema';
 
+type ReviewResultJson = Prisma.ReviewResultCreateInput['result'];
+
 @Injectable()
 export class AiReviewService {
   private readonly logger = new Logger(AiReviewService.name);
@@ -40,7 +42,7 @@ export class AiReviewService {
           create: {
             model,
             language: dto.language,
-            result: parsed as unknown as Prisma.InputJsonValue
+            result: parsed as unknown as ReviewResultJson
           }
         }
       },
