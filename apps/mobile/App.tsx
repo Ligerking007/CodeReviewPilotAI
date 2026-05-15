@@ -8,6 +8,7 @@ import { HomeScreen } from './src/screens/HomeScreen';
 import { ResultScreen } from './src/screens/ResultScreen';
 import { HistoryScreen } from './src/screens/HistoryScreen';
 import { AuthCallbackScreen } from './src/screens/AuthCallbackScreen';
+import { appInfo } from './src/constants/app-info';
 import { RootStackParamList } from './src/types/navigation';
 import { ThemeProvider, useAppTheme } from './src/theme/theme-context';
 
@@ -45,13 +46,16 @@ function AppNavigator() {
           border: colors.border
         }
       }}
+      documentTitle={{
+        formatter: (options) => `${options?.title ?? 'Home'} - ${appInfo.name}`
+      }}
     >
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Result" component={ResultScreen} />
-        <Stack.Screen name="History" component={HistoryScreen} />
-        <Stack.Screen name="AuthCallback" component={AuthCallbackScreen} />
+        <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Home' }} />
+        <Stack.Screen name="Result" component={ResultScreen} options={{ title: 'Review' }} />
+        <Stack.Screen name="History" component={HistoryScreen} options={{ title: 'History' }} />
+        <Stack.Screen name="AuthCallback" component={AuthCallbackScreen} options={{ title: 'Authentication' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

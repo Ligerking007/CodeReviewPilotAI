@@ -88,6 +88,23 @@ gh auth token
 
 and uses that GitHub CLI token to create an app session. This gives the app the same GitHub identity as the machine running the backend. Do not use this as a production authentication method.
 
+## Backend Access Controls
+
+Set `GITHUB_ALLOWED_USERNAMES` to restrict who can create an app session. Leave it empty to allow any valid GitHub user, or set a comma-separated list:
+
+```env
+GITHUB_ALLOWED_USERNAMES="Ligerking007,JakapanK"
+```
+
+The API also applies a global IP-based rate limit. Defaults are `120` requests per `60000` ms and can be changed with:
+
+```env
+RATE_LIMIT_TTL_MS=60000
+RATE_LIMIT_MAX=120
+```
+
+AI review creation is additionally limited to 5 requests per hour per client IP because it calls OpenAI.
+
 ## API Flow
 
 1. Mobile opens `GET /auth/github`.

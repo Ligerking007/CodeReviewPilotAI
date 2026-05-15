@@ -1,5 +1,7 @@
+import { appInfo } from '../../constants/app-info';
+
 export const en = {
-  appName: 'CodeReviewPilot AI',
+  appName: appInfo.name,
   subtitle: 'AI pull request reviews for teams that ship carefully.',
   connectGithub: 'Connect GitHub',
   loginGithub: 'Login with GitHub',
@@ -23,6 +25,7 @@ export const en = {
   history: 'History',
   language: 'Language',
   invalidToken: 'Authentication failed. Please login again.',
+  githubUserNotAllowed: `This GitHub account is not allowed to use ${appInfo.name}.`,
   summary: 'Summary',
   criticalIssues: 'Critical Issues',
   suggestions: 'Suggestions',
@@ -33,6 +36,9 @@ export const en = {
   copied: 'Copied',
   noHistory: 'No review history yet.',
   themeMode: 'Theme mode',
+  releaseNotes: 'Release Notes',
+  appVersion: 'App Version',
+  developer: 'Developer',
   prPlaceholder: 'https://github.com/owner/repo/pull/123',
   loginRequired: 'Connect GitHub before reviewing pull requests.'
 };

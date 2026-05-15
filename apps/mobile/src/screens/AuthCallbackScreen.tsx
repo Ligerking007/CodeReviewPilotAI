@@ -13,6 +13,7 @@ export function AuthCallbackScreen({ route, navigation }: Props) {
   const { t } = useTranslation();
   const { colors } = useAppTheme();
   const { setSessionToken } = useAuth();
+  const errorMessage = route.params?.error === 'github_user_not_allowed' ? t('githubUserNotAllowed') : t('invalidToken');
 
   useEffect(() => {
     async function finish() {
@@ -26,7 +27,7 @@ export function AuthCallbackScreen({ route, navigation }: Props) {
 
   return (
     <Screen>
-      <Text style={{ color: route.params?.error ? colors.danger : colors.text }}>{route.params?.error ? t('invalidToken') : t('loginGithub')}</Text>
+      <Text style={{ color: route.params?.error ? colors.danger : colors.text }}>{route.params?.error ? errorMessage : t('loginGithub')}</Text>
     </Screen>
   );
 }

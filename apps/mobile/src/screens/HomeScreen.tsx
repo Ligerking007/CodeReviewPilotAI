@@ -2,9 +2,11 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import i18n from '../i18n';
 import { Button } from '../components/Button';
 import { Screen } from '../components/Screen';
+import { appInfo } from '../constants/app-info';
 import { createReview, loginWithGithubCli, loginWithGithubToken } from '../services/api';
 import { saveLocalReview } from '../services/storage';
 import { useAuth } from '../store/auth-context';
@@ -18,16 +20,18 @@ type LoginMethod = 'oauth' | 'pat' | 'cli';
 export function HomeScreen({ navigation }: Props) {
   const { t } = useTranslation();
   const { colors } = useAppTheme();
-  const { token, login, logout, setSessionToken } = useAuth();
+  const { token, githubUsername, login, logout, setSessionToken } = useAuth();
   const [prUrl, setPrUrl] = useState('');
   const [githubPat, setGithubPat] = useState('');
-  const [loginMethod, setLoginMethod] = useState<LoginMethod>('pat');
+  const [loginMethod, setLoginMethod] = useState<LoginMethod>('cli');
   const [loading, setLoading] = useState(false);
   const [patLoading, setPatLoading] = useState(false);
   const [cliLoading, setCliLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [releaseNotesOpen, setReleaseNotesOpen] = useState(false);
   const language = i18n.language === 'th' ? 'th' : 'en';
+  const releaseNotes = appInfo.releaseNotes[language];
 
   async function onReview() {
     if (!token) {
@@ -100,6 +104,7 @@ export function HomeScreen({ navigation }: Props) {
         {error ? <Text style={[styles.error, { color: colors.danger }]}>{error}</Text> : null}
         {notice ? <Text style={[styles.notice, { color: colors.success }]}>{notice}</Text> : null}
         <View style={styles.buttonRow}>
+          {token && githubUsername ? <Text style={[styles.username, { color: colors.muted }]}>@{githubUsername}</Text> : null}
           {token ? (
             <Button onPress={logout} variant="secondary">
               {t('logout')}
@@ -115,7 +120,7 @@ export function HomeScreen({ navigation }: Props) {
         <View style={[styles.panel, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Text style={[styles.label, { color: colors.text }]}>{t('connectGithub')}</Text>
           <View style={[styles.segmented, { borderColor: colors.border, backgroundColor: colors.codeBackground }]}>
-            {(['pat', 'oauth', 'cli'] as LoginMethod[]).map((method) => {
+            {(['cli', 'pat', 'oauth'] as LoginMethod[]).map((method) => {
               const active = loginMethod === method;
               return (
                 <Pressable
@@ -170,6 +175,47 @@ export function HomeScreen({ navigation }: Props) {
           </View>
         </View>
       ) : null}
+
+      <View style={[styles.panel, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <View style={styles.metaGrid}>
+          <View style={styles.metaItem}>
+            <Text style={[styles.metaLabel, { color: colors.muted }]}>{t('appVersion')}</Text>
+            <Text style={[styles.metaValue, { color: colors.text }]}>{appInfo.version}</Text>
+          </View>
+          <View style={styles.metaItem}>
+            <Text style={[styles.metaLabel, { color: colors.muted }]}>{t('developer')}</Text>
+            <Text style={[styles.metaValue, { color: colors.text }]}>{appInfo.developerName}</Text>
+          </View>
+        </View>
+        <View style={[styles.releaseBlock, { borderColor: colors.border }]}>
+          <Pressable style={styles.releaseToggle} onPress={() => setReleaseNotesOpen((open) => !open)}>
+            <View style={styles.releaseToggleTitle}>
+              <Ionicons name={releaseNotesOpen ? 'chevron-down' : 'chevron-forward'} size={18} color={colors.muted} />
+              <Text style={[styles.label, { color: colors.text }]}>{t('releaseNotes')}</Text>
+            </View>
+            <Text style={[styles.releaseCount, { color: colors.muted }]}>{releaseNotes.length}</Text>
+          </Pressable>
+          {releaseNotesOpen ? (
+            <View style={styles.releaseContent}>
+              {releaseNotes.map((release) => (
+                <View key={release.version} style={[styles.releaseVersion, { borderColor: colors.border }]}>
+                  <View style={styles.releaseHeader}>
+                    <Text style={[styles.releaseVersionTitle, { color: colors.text }]}>v{release.version}</Text>
+                    <Text style={[styles.releaseDate, { color: colors.muted }]}>{release.date}</Text>
+                  </View>
+                  <Text style={[styles.releaseTitle, { color: colors.text }]}>{release.title}</Text>
+                  {release.items.map((note) => (
+                    <View key={note} style={styles.releaseItem}>
+                      <View style={[styles.releaseBullet, { backgroundColor: colors.accent }]} />
+                      <Text style={[styles.releaseText, { color: colors.text }]}>{note}</Text>
+                    </View>
+                  ))}
+                </View>
+              ))}
+            </View>
+          ) : null}
+        </View>
+      </View>
     </Screen>
   );
 }
@@ -184,5 +230,23 @@ const styles = StyleSheet.create({
   segmented: { borderWidth: 1, borderRadius: 8, padding: 4, flexDirection: 'row', gap: 4 },
   segment: { flex: 1, minHeight: 38, borderRadius: 6, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 10 },
   segmentText: { fontSize: 14, fontWeight: '800', textAlign: 'center' },
-  buttonRow: { flexDirection: 'row', gap: 12, flexWrap: 'wrap', justifyContent: 'flex-end' }
+  buttonRow: { flexDirection: 'row', gap: 12, flexWrap: 'wrap', justifyContent: 'flex-end', alignItems: 'center' },
+  username: { fontSize: 13, fontWeight: '800' },
+  metaGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  metaItem: { minWidth: 180, flex: 1, gap: 4 },
+  metaLabel: { fontSize: 12, fontWeight: '700', textTransform: 'uppercase' },
+  metaValue: { fontSize: 16, fontWeight: '800' },
+  releaseBlock: { borderTopWidth: 1, paddingTop: 12, gap: 10 },
+  releaseToggle: { minHeight: 36, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  releaseToggleTitle: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  releaseCount: { fontSize: 13, fontWeight: '700' },
+  releaseContent: { gap: 12 },
+  releaseVersion: { borderTopWidth: 1, paddingTop: 12, gap: 8 },
+  releaseHeader: { flexDirection: 'row', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' },
+  releaseVersionTitle: { fontSize: 16, fontWeight: '800' },
+  releaseDate: { fontSize: 12, fontWeight: '700' },
+  releaseTitle: { fontSize: 14, fontWeight: '700', lineHeight: 20 },
+  releaseItem: { flexDirection: 'row', gap: 10, alignItems: 'flex-start' },
+  releaseBullet: { width: 6, height: 6, borderRadius: 3, marginTop: 7 },
+  releaseText: { flex: 1, fontSize: 14, lineHeight: 20 }
 });
