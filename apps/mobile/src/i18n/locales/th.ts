@@ -1,7 +1,7 @@
 import { appInfo } from '../../constants/app-info';
 
 export const th = {
-  appName: appInfo.name,
+  appName: 'ผู้ช่วยรีวิวโค้ดอัจฉริยะ',
   subtitle: 'รีวิว Pull Request ด้วย AI สำหรับทีมที่ต้องการส่งงานอย่างรอบคอบ',
   connectGithub: 'เชื่อมต่อ GitHub',
   loginGithub: 'เข้าสู่ระบบด้วย GitHub',

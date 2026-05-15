@@ -29,6 +29,7 @@ export class AuthService {
   ) {}
 
   async loginWithGithub(profile: GithubProfile) {
+    // Enforce access before token persistence so disallowed users never create a stored GitHub account link.
     this.assertGithubUsernameAllowed(profile.username);
 
     const encrypted = this.tokenCrypto.encrypt(profile.accessToken);

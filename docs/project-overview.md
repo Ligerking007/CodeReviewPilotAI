@@ -22,7 +22,7 @@ CodeReviewPilot AI addresses these problems by combining GitHub API data with an
 ## User Flow
 
 1. The user opens CodeReviewPilot AI.
-2. The user logs in with GitHub OAuth.
+2. The user logs in with GitHub OAuth, a fine-grained PAT, or Local GitHub CLI Auth during local development.
 3. The user pastes a GitHub Pull Request URL, for example `https://github.com/owner/repo/pull/123`.
 4. The backend validates the URL and extracts `owner`, `repo`, and `prNumber`.
 5. The backend uses the user's GitHub access token to fetch PR details, changed files, patches, and commits.
@@ -37,6 +37,8 @@ The project is organized as a monorepo with two main applications:
 
 - `apps/mobile`: React Native + Expo frontend for Android, iOS, and Web.
 - `apps/api`: NestJS backend API for authentication, GitHub integration, AI review, and persistence.
+
+The frontend uses a shared app shell with a gradient header, browser page titles such as `Home - CodeReviewPilot AI`, language/theme/history actions, and a Home screen metadata panel that shows app version, developer name, and collapsible release notes.
 
 Backend modules:
 
@@ -83,11 +85,13 @@ The project includes several security-focused design choices:
 - GitHub access tokens stay on the server and are never returned to the frontend.
 - GitHub permissions are limited to read-only access for pull requests, contents, and metadata.
 - The AI prompt only includes PR context needed for review.
+- `GITHUB_ALLOWED_USERNAMES` can restrict which GitHub accounts may create sessions.
+- Global API rate limiting reduces abuse, and AI review creation has a stricter throttle because it consumes OpenAI quota.
 
 Production improvements I would add:
 
 - Secret scanning and redaction before sending diffs to AI.
-- Per-user and per-repository rate limiting.
+- Per-user and per-repository rate limiting beyond the current IP-based limits.
 - GitHub webhook signature verification.
 - Token rotation and revocation handling.
 - Audit logs for review requests.

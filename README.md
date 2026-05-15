@@ -11,15 +11,19 @@ AI-powered GitHub Pull Request review platform built with Expo, React Native, Ne
 
 For an English walkthrough that explains the product idea, architecture, trade-offs, security decisions, demo script, and talking points for job interviews, see [docs/project-overview.md](docs/project-overview.md).
 
+For versioned product changes, see [CHANGELOG.md](CHANGELOG.md).
+
 ## Features
 
 - GitHub OAuth login and logout.
+- Local GitHub CLI Auth and fine-grained PAT login for local/private repository workflows.
 - Paste a GitHub PR URL like `https://github.com/owner/repo/pull/123`.
 - Fetch PR metadata, changed files, commits, and patches from GitHub.
 - Generate AI review sections: summary, critical issues, suggestions, security, performance, and best practices.
 - Store review history in the backend and locally on the device.
-- English and Thai UI.
-- Dark and light mode.
+- English and Thai UI with versioned release notes.
+- Dark/light mode, a shared gradient app header, and browser tab titles like `Home - CodeReviewPilot AI`.
+- Backend GitHub username allowlist and rate limiting for safer shared deployments.
 
 ## Requirements
 

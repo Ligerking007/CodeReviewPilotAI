@@ -1,3 +1,4 @@
+// Single source of truth for product metadata shown in UI, browser titles, and release notes.
 export const appInfo = {
   name: 'CodeReviewPilot AI',
   version: '0.1.0',
@@ -12,6 +13,8 @@ export const appInfo = {
           'Added GitHub username allowlist to restrict who can create app sessions.',
           'Added backend rate limiting, including stricter throttling for AI review generation.',
           'Added release notes, app version, and developer information to the Home screen.',
+          'Added unit tests for app metadata and session token username parsing.',
+          'Added a gradient app header and GitHub username display beside Logout.',
           'Added a shared app header with theme, language, and history shortcuts on every screen.',
           'Improved AI review Markdown rendering for inline code and code blocks.'
         ]
@@ -70,6 +73,8 @@ export const appInfo = {
           'เพิ่ม GitHub username allowlist เพื่อจำกัดว่าใครสามารถสร้าง session เข้าใช้งานระบบได้',
           'เพิ่ม rate limit ฝั่ง backend รวมถึงจำกัดการเรียก AI review ให้เข้มขึ้น',
           'เพิ่ม Release Notes, App Version และ Developer บนหน้า Home',
+          'เพิ่ม unit test สำหรับข้อมูลแอปและการอ่าน GitHub username จาก session token',
+          'เพิ่ม header แบบไล่สีและแสดง GitHub username ข้างปุ่ม Logout',
           'เพิ่ม header กลางพร้อมปุ่มธีม ภาษา และประวัติบนทุกหน้า',
           'ปรับการแสดงผล Markdown ของ AI review ให้อ่าน inline code และ code block ง่ายขึ้น'
         ]

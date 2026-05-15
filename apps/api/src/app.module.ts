@@ -18,6 +18,7 @@ function getPositiveNumber(value: string | number | undefined, fallback: number)
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    // Global IP-based throttle protects public endpoints; expensive review generation has its own tighter limit.
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => [
