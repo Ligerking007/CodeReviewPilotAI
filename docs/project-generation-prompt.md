@@ -216,6 +216,10 @@ Add basic unit tests for:
 README should include:
 - Project overview
 - Architecture diagram using Mermaid
+- Authentication/token flow sequence diagram
+- Pull request review sequence diagram
+- Backend module map diagram
+- Code structure diagram for repository folders
 - Auth/token flow
 - Setup instructions
 - GitHub OAuth/PAT setup
@@ -234,6 +238,107 @@ flowchart LR
   API -->|Review prompt| OpenAI[OpenAI API\ngpt-4.1-mini]
   API -->|Users / tokens / history| DB[(PostgreSQL)]
   API -->|Structured review JSON| Expo
+
+Authentication Flow Diagram:
+Use Mermaid:
+
+sequenceDiagram
+  autonumber
+  actor User as Developer
+  participant App as Expo App
+  participant API as NestJS API
+  participant GitHub as GitHub API
+  participant DB as PostgreSQL
+
+  User->>App: Select OAuth / PAT / Local CLI
+  App->>API: Send auth request
+  API->>GitHub: Validate GitHub identity/token
+  GitHub-->>API: GitHub profile + token scopes
+  API->>API: Check username allowlist
+  API->>API: Encrypt GitHub access token
+  API->>DB: Store user + encrypted token
+  API-->>App: Return app JWT
+  App->>App: Store app JWT only
+
+Pull Request Review Flow Diagram:
+Use Mermaid:
+
+sequenceDiagram
+  autonumber
+  actor User as Developer
+  participant App as Expo App
+  participant API as NestJS API
+  participant GitHub as GitHub API
+  participant OpenAI as OpenAI API
+  participant DB as PostgreSQL
+
+  User->>App: Paste GitHub PR URL
+  App->>API: POST /ai-review/reviews with app JWT
+  API->>API: Verify JWT guard
+  API->>API: Parse owner / repo / PR number
+  API->>GitHub: Fetch PR details, files, patches, commits
+  GitHub-->>API: PR context
+  API->>OpenAI: Send review prompt with diff context
+  OpenAI-->>API: Structured JSON review
+  API->>API: Validate and normalize with Zod
+  API->>DB: Save review history and result
+  API-->>App: Return structured review
+  App-->>User: Render sections, severity badges, Markdown
+
+Code Structure Diagram:
+Use Mermaid:
+
+flowchart TB
+  Root[<PROJECT_NAME>] --> Apps[apps]
+  Root --> Docs[docs]
+  Root --> CI[.github/workflows]
+  Root --> Docker[docker-compose.yml]
+
+  Apps --> API[apps/api]
+  Apps --> Mobile[apps/mobile]
+
+  API --> ApiSrc[src]
+  API --> Prisma[prisma/schema.prisma]
+  API --> ApiEnv[.env.example]
+  API --> ApiDocker[Dockerfile]
+
+  ApiSrc --> Auth[auth]
+  ApiSrc --> Github[github]
+  ApiSrc --> AIReview[ai-review]
+  ApiSrc --> History[history]
+  ApiSrc --> Users[users]
+  ApiSrc --> Common[common]
+
+  Mobile --> MobileSrc[src]
+  Mobile --> ExpoConfig[app.json]
+  Mobile --> MobileEnv[.env.example]
+
+  MobileSrc --> Screens[screens]
+  MobileSrc --> Components[components]
+  MobileSrc --> Services[services]
+  MobileSrc --> Store[store]
+  MobileSrc --> Theme[theme]
+  MobileSrc --> I18n[i18n]
+  MobileSrc --> Utils[utils]
+  MobileSrc --> Types[types]
+  MobileSrc --> Constants[constants]
+
+Document folder responsibilities:
+- Backend `auth`: OAuth, PAT, Local CLI Auth, JWT, allowlist, token encryption.
+- Backend `github`: PR URL parsing, GitHub REST API, PR bundle construction, GitHub App support.
+- Backend `ai-review`: OpenAI prompt construction, review generation, Zod validation, normalization.
+- Backend `history`: Review history retrieval.
+- Backend `users`: User profile and GitHub account persistence.
+- Backend `common`: Prisma service, decorators, shared backend types.
+- Frontend `screens`: Home, Result, History, Auth callback screens.
+- Frontend `components`: Shared UI primitives.
+- Frontend `services`: API client and storage adapters.
+- Frontend `store`: Auth context and app JWT state.
+- Frontend `theme`: Dark/light/system theme.
+- Frontend `i18n`: English and Thai translations.
+- Frontend `utils`: PR URL and session token helpers with tests.
+- Frontend `types`: Navigation and review response types.
+- Frontend `constants`: App metadata and versioned release notes.
 
 Environment Variables:
 Backend:

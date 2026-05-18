@@ -31,6 +31,56 @@ CodeReviewPilot AI addresses these problems by combining GitHub API data with an
 8. The backend stores the review history in the database.
 9. The frontend displays the result with expandable sections, severity badges, file references, Markdown rendering, and a copy button.
 
+## Visual Flow Diagrams
+
+### Authentication And Token Flow
+
+```mermaid
+sequenceDiagram
+  autonumber
+  actor User as Developer
+  participant App as Expo App
+  participant API as NestJS API
+  participant GitHub as GitHub API
+  participant DB as PostgreSQL
+
+  User->>App: Select OAuth / PAT / Local CLI
+  App->>API: Send auth request
+  API->>GitHub: Validate GitHub identity/token
+  GitHub-->>API: GitHub profile + token scopes
+  API->>API: Check username allowlist
+  API->>API: Encrypt GitHub access token
+  API->>DB: Store user + encrypted token
+  API-->>App: Return app JWT
+  App->>App: Store app JWT only
+```
+
+### Pull Request Review Flow
+
+```mermaid
+sequenceDiagram
+  autonumber
+  actor User as Developer
+  participant App as Expo App
+  participant API as NestJS API
+  participant GitHub as GitHub API
+  participant OpenAI as OpenAI API
+  participant DB as PostgreSQL
+
+  User->>App: Paste GitHub PR URL
+  App->>API: POST /ai-review/reviews with app JWT
+  API->>API: Verify JWT guard
+  API->>API: Parse owner / repo / PR number
+  API->>GitHub: Fetch PR details, files, patches, commits
+  GitHub-->>API: PR context
+  API->>OpenAI: Send review prompt with diff context
+  OpenAI-->>API: Structured JSON review
+  API->>API: Validate and normalize with Zod
+  API->>DB: Save review history and result
+  API-->>App: Return structured review
+  App-->>User: Render sections, severity badges, Markdown
+```
+
 ## Architecture Overview
 
 The project is organized as a monorepo with two main applications:
@@ -48,7 +98,29 @@ flowchart LR
   API -->|Structured review JSON| Expo
 ```
 
+### Backend Module Map
+
+```mermaid
+flowchart TB
+  AppModule[AppModule] --> Auth[auth\nOAuth / PAT / CLI / JWT]
+  AppModule --> Users[users\nprofiles + account mapping]
+  AppModule --> GitHubModule[github\nPR parsing + GitHub API]
+  AppModule --> AI[ai-review\nprompt + OpenAI + Zod]
+  AppModule --> History[history\nreview history]
+  AppModule --> Common[common\nPrisma + decorators]
+
+  Auth --> DB[(PostgreSQL)]
+  Users --> DB
+  GitHubModule --> GitHub[GitHub API]
+  AI --> GitHubModule
+  AI --> OpenAI[OpenAI API]
+  AI --> DB
+  History --> DB
+```
+
 The frontend uses a shared app shell with a gradient header, browser page titles such as `Home - CodeReviewPilot AI`, a custom web favicon, language/theme/history actions, and a Home screen metadata panel that shows app version, developer name, and collapsible release notes.
+
+For detailed code structure and folder responsibilities, see [architecture.md](architecture.md#code-structure).
 
 Backend modules:
 

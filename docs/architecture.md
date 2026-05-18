@@ -27,14 +27,66 @@ flowchart LR
 
 The Expo app owns presentation, local settings, local history cache, authentication token storage, language selection, theme selection, and app metadata display. For container deployment, the mobile app is exported as a static Expo Web build and served by Nginx.
 
-Key folders:
+## Code Structure
 
-- `src/screens`: feature screens.
-- `src/components`: reusable UI primitives.
-- `src/constants`: app metadata such as name, version, developer, and release notes.
-- `src/services`: API client and storage adapters.
-- `src/i18n`: English and Thai translations.
-- `src/theme`: light/dark color tokens.
+```mermaid
+flowchart TB
+  Root[CodeReviewPilotAI] --> Apps[apps]
+  Root --> Docs[docs]
+  Root --> CI[.github/workflows]
+  Root --> Docker[docker-compose.yml]
+
+  Apps --> API[apps/api]
+  Apps --> Mobile[apps/mobile]
+
+  API --> ApiSrc[src]
+  API --> Prisma[prisma/schema.prisma]
+  API --> ApiEnv[.env.example]
+  API --> ApiDocker[Dockerfile]
+
+  ApiSrc --> Auth[auth]
+  ApiSrc --> Github[github]
+  ApiSrc --> AIReview[ai-review]
+  ApiSrc --> History[history]
+  ApiSrc --> Users[users]
+  ApiSrc --> Common[common]
+
+  Mobile --> MobileSrc[src]
+  Mobile --> ExpoConfig[app.json]
+  Mobile --> MobileEnv[.env.example]
+
+  MobileSrc --> Screens[screens]
+  MobileSrc --> Components[components]
+  MobileSrc --> Services[services]
+  MobileSrc --> Store[store]
+  MobileSrc --> Theme[theme]
+  MobileSrc --> I18n[i18n]
+  MobileSrc --> Utils[utils]
+  MobileSrc --> Types[types]
+  MobileSrc --> Constants[constants]
+```
+
+### Backend Folder Responsibilities
+
+- `auth`: GitHub OAuth, fine-grained PAT login, Local CLI Auth, JWT session handling, allowlist enforcement, and token encryption.
+- `github`: PR URL parsing, GitHub REST API calls, PR bundle construction, and GitHub App installation token support.
+- `ai-review`: OpenAI prompt construction, review generation, Zod validation, and review result normalization.
+- `history`: Review history retrieval for the authenticated user.
+- `users`: User profile and GitHub account persistence.
+- `common`: Prisma service, current-user decorator, and shared backend types.
+- `prisma`: PostgreSQL schema for users, GitHub accounts, installations, review history, and review results.
+
+### Frontend Folder Responsibilities
+
+- `screens`: Home, Result, History, and Auth callback screens.
+- `components`: Shared UI primitives such as `Screen`, `Button`, `Section`, and `IssueCard`.
+- `services`: API client functions and local/secure storage adapters.
+- `store`: Auth context, app JWT state, and derived display identity such as GitHub username.
+- `theme`: Dark, light, and system theme context and color tokens.
+- `i18n`: English and Thai translation resources.
+- `utils`: PR URL validation and session token parsing helpers with unit tests.
+- `types`: Navigation and review response TypeScript types.
+- `constants`: App metadata such as app name, version, developer name, and versioned release notes.
 
 The shared `Screen` layout renders the gradient app header on every page. It includes the app identity, theme toggle, language toggle, and history shortcut. The Home screen also shows app version, developer name, and collapsible versioned release notes.
 
