@@ -11,6 +11,8 @@ AI-powered GitHub Pull Request review platform built with Expo, React Native, Ne
 
 For an English walkthrough that explains the product idea, architecture, trade-offs, security decisions, demo script, and talking points for job interviews, see [docs/project-overview.md](docs/project-overview.md).
 
+For the reference specification/prompt used to recreate this project, see [docs/project-generation-prompt.md](docs/project-generation-prompt.md).
+
 For versioned product changes, see [CHANGELOG.md](CHANGELOG.md).
 
 ## Features
