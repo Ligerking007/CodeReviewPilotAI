@@ -205,6 +205,10 @@ AI review creation uses `AI_REVIEW_RATE_LIMIT_MAX` and `AI_REVIEW_RATE_LIMIT_TTL
 npm test
 ```
 
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
+
 Web
 <img width="800" height="552" alt="image" src="https://github.com/user-attachments/assets/c7c12b42-8e96-4b3d-be2f-7c60c5232710" />
 <img width="800" height="558" alt="image" src="https://github.com/user-attachments/assets/59607896-c1a7-49d9-91a2-00c36073c18a" />
