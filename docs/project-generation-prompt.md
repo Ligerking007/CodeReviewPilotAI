@@ -209,6 +209,8 @@ Add basic unit tests for:
 - GitHub PR URL parser
 - AI review result schema normalization
 - GitHub allowlist parser
+- GitHub token encryption/decryption and invalid encryption key handling
+- AI review prompt construction, language selection, binary patch fallback, and patch size limits
 - app metadata/release notes
 - session token username parsing
 
@@ -220,6 +222,10 @@ README should include:
 - Pull request review sequence diagram
 - Backend module map diagram
 - Code structure diagram for repository folders
+- Backend request flow diagram
+- Database ER diagram
+- Deployment diagram
+- Test coverage focus
 - Auth/token flow
 - Setup instructions
 - GitHub OAuth/PAT setup
@@ -322,6 +328,55 @@ flowchart TB
   MobileSrc --> Utils[utils]
   MobileSrc --> Types[types]
   MobileSrc --> Constants[constants]
+
+Backend Request Flow Diagram:
+Use Mermaid:
+
+sequenceDiagram
+  autonumber
+  participant Client as Expo App
+  participant Controller as NestJS Controller
+  participant Guard as JWT Guard / Throttler
+  participant Service as Domain Service
+  participant Prisma as Prisma Service
+  participant GitHub as GitHub API
+  participant OpenAI as OpenAI API
+
+  Client->>Controller: Authenticated API request
+  Controller->>Guard: Validate bearer JWT and rate limit
+  Guard-->>Controller: Current user context
+  Controller->>Service: Execute use case
+  Service->>Prisma: Load encrypted GitHub token / history
+  Prisma-->>Service: User data
+  Service->>GitHub: Fetch PR details, files, commits
+  GitHub-->>Service: PR bundle
+  Service->>OpenAI: Send bounded review prompt
+  OpenAI-->>Service: Structured JSON review
+  Service->>Prisma: Persist history and review result
+  Service-->>Controller: Response DTO
+  Controller-->>Client: Review result
+
+Database ER Diagram:
+Use Mermaid:
+
+erDiagram
+  users ||--o{ github_accounts : owns
+  users ||--o{ review_history : creates
+  review_history ||--o| review_results : stores
+
+Deployment Diagram:
+Use Mermaid:
+
+flowchart TB
+  Developer[Developer Browser / Mobile Device] --> Web[Expo Web / Native App]
+  Nginx[Mobile Web Container\nNginx static export]
+  API[NestJS API Container]
+  Postgres[(PostgreSQL)]
+  Web -->|EXPO_PUBLIC_API_URL| API
+  Developer -->|Web demo| Nginx
+  API -->|DATABASE_URL| Postgres
+  API -->|Read PR data| GitHub[GitHub API]
+  API -->|Generate review| OpenAI[OpenAI API]
 
 Document folder responsibilities:
 - Backend `auth`: OAuth, PAT, Local CLI Auth, JWT, allowlist, token encryption.

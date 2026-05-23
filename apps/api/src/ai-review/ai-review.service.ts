@@ -93,6 +93,7 @@ export class AiReviewService {
   buildPrompt(bundle: Awaited<ReturnType<GithubService['getPullRequestBundle']>>, language: 'en' | 'th') {
     const files = bundle.files
       .map((file) => {
+        // Keep each patch bounded so a large PR cannot create an oversized OpenAI request from one file.
         const patch = file.patch ? file.patch.slice(0, 12000) : '[binary or patch unavailable]';
         return [
           `File: ${file.filename}`,
@@ -103,6 +104,7 @@ export class AiReviewService {
         ].join('\n');
       })
       .join('\n\n---\n\n')
+      // Keep the full prompt within a predictable budget while preserving broad PR context.
       .slice(0, 90000);
 
     const commits = bundle.commits.map((commit) => `- ${commit.sha.slice(0, 7)} ${commit.commit.message}`).join('\n');

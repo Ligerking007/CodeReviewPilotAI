@@ -12,6 +12,7 @@ const optionalLineSchema = z
 
 export const reviewIssueSchema = z
   .preprocess((value) => {
+    // The model may occasionally return a plain bullet string; normalize it so the UI still renders safely.
     if (typeof value === 'string') {
       return {
         severity: 'info',

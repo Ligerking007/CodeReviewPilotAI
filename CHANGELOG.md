@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Unit tests for GitHub token encryption/decryption, random IV usage, and invalid encryption key handling.
+- Unit tests for AI review prompt construction, including language selection, PR metadata, binary patch fallback, and patch size limits.
+- Architecture documentation describing the test coverage focus for security-sensitive and AI-boundary code paths.
+- Additional Mermaid diagrams for interview demo flow, auth method comparison, backend request flow, database ERD, and deployment topology.
+
+### Changed
+
+- Added focused comments around token encryption, AI result normalization, and OpenAI prompt size boundaries.
+
 ## 0.1.0 - 2026-05-15
 
 ### Added

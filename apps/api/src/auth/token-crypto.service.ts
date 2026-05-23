@@ -14,6 +14,7 @@ export class TokenCryptoService {
 
   encrypt(accessToken: string): EncryptedToken {
     const key = this.getKey();
+    // AES-GCM needs a unique nonce per encryption. Store the IV with the ciphertext, not as a secret.
     const iv = randomBytes(12);
     const cipher = createCipheriv('aes-256-gcm', key, iv);
     const encrypted = Buffer.concat([cipher.update(accessToken, 'utf8'), cipher.final()]);

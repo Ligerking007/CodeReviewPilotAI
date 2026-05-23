@@ -33,6 +33,19 @@ CodeReviewPilot AI addresses these problems by combining GitHub API data with an
 
 ## Visual Flow Diagrams
 
+### Interview Demo Flow
+
+```mermaid
+flowchart LR
+  Login[Connect GitHub] --> Paste[Paste PR URL]
+  Paste --> Analyze[AI analyzes PR diff]
+  Analyze --> Result[Review result sections]
+  Result --> Copy[Copy review feedback]
+  Result --> History[Review history]
+```
+
+This is the shortest flow to present in an interview: connect GitHub, review a real PR, explain the AI output, and show that results are saved for later reference.
+
 ### Authentication And Token Flow
 
 ```mermaid
@@ -162,11 +175,13 @@ Prisma keeps the database schema, migrations, and TypeScript types aligned. It r
 The project includes several security-focused design choices:
 
 - GitHub access tokens are encrypted before being stored in the database using AES-256-GCM.
+- Token encryption has unit tests for round-trip decryption, random IV usage, and invalid key handling.
 - The frontend stores the app JWT in SecureStore on native platforms and localStorage on Web.
 - Protected backend endpoints use a bearer JWT guard.
 - GitHub access tokens stay on the server and are never returned to the frontend.
 - GitHub permissions are limited to read-only access for pull requests, contents, and metadata.
 - The AI prompt only includes PR context needed for review.
+- AI prompt generation has unit tests for language selection, PR metadata inclusion, binary patch fallback, and diff size limits.
 - `GITHUB_ALLOWED_USERNAMES` can restrict which GitHub accounts may create sessions.
 - Global API rate limiting reduces abuse, and AI review creation has a stricter throttle because it consumes OpenAI quota.
 

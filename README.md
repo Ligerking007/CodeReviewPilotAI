@@ -11,6 +11,8 @@ AI-powered GitHub Pull Request review platform built with Expo, React Native, Ne
 
 For an English walkthrough that explains the product idea, architecture, trade-offs, security decisions, demo script, and talking points for job interviews, see [docs/project-overview.md](docs/project-overview.md).
 
+For technical diagrams, backend request flow, database ERD, deployment topology, code structure, and test coverage focus, see [docs/architecture.md](docs/architecture.md).
+
 For the reference specification/prompt used to recreate this project, see [docs/project-generation-prompt.md](docs/project-generation-prompt.md).
 
 For versioned product changes, see [CHANGELOG.md](CHANGELOG.md).
@@ -204,6 +206,8 @@ AI review creation uses `AI_REVIEW_RATE_LIMIT_MAX` and `AI_REVIEW_RATE_LIMIT_TTL
 ```bash
 npm test
 ```
+
+The test suite includes coverage for GitHub PR URL parsing, GitHub username allowlist behavior, encrypted token storage, AI review result normalization, AI prompt construction boundaries, app metadata, release notes, and session token username parsing.
 
 ## License
 
