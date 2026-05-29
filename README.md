@@ -125,6 +125,7 @@ For a real public deployment, replace local URLs with deployed domains:
 
 ```env
 EXPO_PUBLIC_API_URL=https://api.example.com
+EXPO_PUBLIC_APP_BASE_URL=https://ligerking007.github.io/CodeReviewPilotAI
 APP_PUBLIC_URL=https://ligerking007.github.io/CodeReviewPilotAI
 APP_WEB_REDIRECT_URL=https://app.example.com/auth/callback
 GITHUB_CALLBACK_URL=https://api.example.com/auth/github/callback

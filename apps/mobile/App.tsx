@@ -13,6 +13,8 @@ import { RootStackParamList } from './src/types/navigation';
 import { ThemeProvider, useAppTheme } from './src/theme/theme-context';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+const webBaseUrl = process.env.EXPO_PUBLIC_APP_BASE_URL?.replace(/\/+$/, '');
+const linkingPrefixes = [webBaseUrl, Linking.createURL('/'), 'codereviewpilot://'].filter(Boolean) as string[];
 
 function AppNavigator() {
   const { colors, isDark } = useAppTheme();
@@ -25,7 +27,8 @@ function AppNavigator() {
   return (
     <NavigationContainer
       linking={{
-        prefixes: [Linking.createURL('/'), 'codereviewpilot://'],
+        // GitHub Pages serves this app from a repository subpath, so web linking must include that base URL.
+        prefixes: linkingPrefixes,
         config: {
           screens: {
             Home: '',

@@ -77,6 +77,7 @@ jobs:
         env:
           EXPO_BASE_URL: /CodeReviewPilotAI
           EXPO_PUBLIC_API_URL: ${{ vars.EXPO_PUBLIC_API_URL || 'http://localhost:3000' }}
+          EXPO_PUBLIC_APP_BASE_URL: https://ligerking007.github.io/CodeReviewPilotAI
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3

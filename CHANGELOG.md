@@ -10,6 +10,7 @@
 - Additional Mermaid diagrams for interview demo flow, auth method comparison, backend request flow, database ERD, and deployment topology.
 - `AGENTS.md` with repository-specific workflow rules for tests, documentation, changelog updates, security, and delivery.
 - GitHub Pages public app URL updated to `https://ligerking007.github.io/CodeReviewPilotAI`.
+- Expo Web linking now uses `EXPO_PUBLIC_APP_BASE_URL` so GitHub Pages keeps the `/CodeReviewPilotAI` repository path.
 
 ### Changed
 

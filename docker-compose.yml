@@ -56,6 +56,7 @@ services:
       dockerfile: apps/mobile/Dockerfile
       args:
         EXPO_PUBLIC_API_URL: ${EXPO_PUBLIC_API_URL:-http://localhost:3000}
+        EXPO_PUBLIC_APP_BASE_URL: ${EXPO_PUBLIC_APP_BASE_URL:-http://localhost:8081}
     container_name: codereviewpilot-mobile
     restart: unless-stopped
     depends_on:

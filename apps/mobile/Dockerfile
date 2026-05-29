@@ -12,7 +12,9 @@ FROM node:24-alpine AS builder
 WORKDIR /app
 
 ARG EXPO_PUBLIC_API_URL=http://localhost:3000
+ARG EXPO_PUBLIC_APP_BASE_URL=http://localhost:8081
 ENV EXPO_PUBLIC_API_URL=$EXPO_PUBLIC_API_URL
+ENV EXPO_PUBLIC_APP_BASE_URL=$EXPO_PUBLIC_APP_BASE_URL
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
