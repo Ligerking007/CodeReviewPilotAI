@@ -10,7 +10,7 @@ export class AppController {
   home() {
     const port = this.config.get<number>('PORT') ?? 3000;
     const frontendUrl = this.config.get<string>('APP_WEB_REDIRECT_URL')?.replace('/auth/callback', '') ?? 'http://localhost:8081';
-    const publicFrontendUrl = this.config.get<string>('APP_PUBLIC_URL') ?? 'https://ligerking007.github.io/CodeReviewPilotAI/';
+    const publicFrontendUrl = this.config.get<string>('APP_PUBLIC_URL') ?? 'https://ligerking007.github.io/CodeReviewPilotAI';
     const nodeEnv = this.config.get<string>('NODE_ENV') ?? 'development';
     const model = this.config.get<string>('OPENAI_MODEL') ?? 'gpt-4.1-mini';
     const allowedUsers = this.config.get<string>('GITHUB_ALLOWED_USERNAMES')?.trim();

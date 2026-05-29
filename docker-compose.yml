@@ -34,6 +34,7 @@ services:
       DATABASE_URL: ${DATABASE_URL:-postgresql://codereviewpilot:codereviewpilot@postgres:5432/codereviewpilot?schema=public}
       JWT_SECRET: ${JWT_SECRET}
       APP_WEB_REDIRECT_URL: ${APP_WEB_REDIRECT_URL:-http://localhost:8081/auth/callback}
+      APP_PUBLIC_URL: ${APP_PUBLIC_URL:-https://ligerking007.github.io/CodeReviewPilotAI}
       GITHUB_ALLOWED_USERNAMES: ${GITHUB_ALLOWED_USERNAMES:-}
       RATE_LIMIT_TTL_MS: ${RATE_LIMIT_TTL_MS:-60000}
       RATE_LIMIT_MAX: ${RATE_LIMIT_MAX:-120}
