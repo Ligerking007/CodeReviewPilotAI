@@ -11,6 +11,9 @@
 - `AGENTS.md` with repository-specific workflow rules for tests, documentation, changelog updates, security, and delivery.
 - GitHub Pages public app URL updated to `https://ligerking007.github.io/CodeReviewPilotAI`.
 - Expo Web linking now uses `EXPO_PUBLIC_APP_BASE_URL` so GitHub Pages keeps the `/CodeReviewPilotAI` repository path.
+- Explicit agent localization rules for keeping English and Thai UI text, release notes, and related tests aligned.
+- Explicit agent UI rules for responsive layouts and light/dark/system theme support.
+- Current app version display in the shared UI header across screens.
 
 ### Changed
 

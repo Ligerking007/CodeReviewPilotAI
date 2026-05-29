@@ -17,6 +17,7 @@ export const appInfo = {
           'Added unit tests for app metadata and session token username parsing.',
           'Added a gradient app header and GitHub username display beside Logout.',
           'Added a shared app header with theme, language, and history shortcuts on every screen.',
+          'Added the current app version to the shared header on every screen.',
           'Improved AI review Markdown rendering for inline code and code blocks.'
         ]
       },
@@ -78,6 +79,7 @@ export const appInfo = {
           'เพิ่ม unit test สำหรับข้อมูลแอปและการอ่าน GitHub username จาก session token',
           'เพิ่ม header แบบไล่สีและแสดง GitHub username ข้างปุ่ม Logout',
           'เพิ่ม header กลางพร้อมปุ่มธีม ภาษา และประวัติบนทุกหน้า',
+          'เพิ่มเวอร์ชันปัจจุบันของแอปใน header กลางบนทุกหน้า',
           'ปรับการแสดงผล Markdown ของ AI review ให้อ่าน inline code และ code block ง่ายขึ้น'
         ]
       },

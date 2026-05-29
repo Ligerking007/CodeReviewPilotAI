@@ -67,8 +67,28 @@ Keep `project-overview.md` and `architecture.md` separate:
 - Prefer existing helpers and module boundaries over new abstractions.
 - Add comments only where they explain important security, architecture, or AI-boundary decisions.
 - Keep frontend UI consistent with the existing developer-tool style.
-- Preserve English and Thai localization when visible text changes.
 - Keep app metadata centralized in `apps/mobile/src/constants/app-info.ts`.
+
+## Localization Rules
+
+All UI work must support English and Thai localization. When visible UI text, release notes, labels, buttons, empty states, errors, or user-facing copy changes:
+
+- Update both English and Thai translations.
+- Keep `apps/mobile/src/i18n/locales/en.ts` and `apps/mobile/src/i18n/locales/th.ts` aligned.
+- Update localized release notes in `apps/mobile/src/constants/app-info.ts` when the product-facing change should appear in the app metadata panel.
+- Add or update tests when localization structure matters, such as release-note version alignment.
+- Do not hardcode visible text directly in screens or components when an existing i18n key pattern is available.
+
+## UI Requirements
+
+All frontend UI changes must preserve the product's developer-tool experience across supported platforms.
+
+- Support Android, iOS, and Web layouts.
+- Keep screens responsive across mobile, tablet, and desktop web widths.
+- Avoid text overflow, clipped controls, and overlapping elements in both English and Thai.
+- Support light, dark, and system theme modes through the existing theme context and color tokens.
+- Check that new UI states remain readable in both light and dark themes.
+- Keep shared navigation/header behavior consistent across screens.
 
 ## Security Rules
 

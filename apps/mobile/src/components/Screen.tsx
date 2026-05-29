@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { appInfo } from '../constants/app-info';
 import { useAppTheme } from '../theme/theme-context';
 import { RootStackParamList } from '../types/navigation';
 
@@ -28,7 +29,12 @@ function AppHeader() {
         </View>
         <View style={styles.brandText}>
           <Text style={styles.title}>{t('appName')}</Text>
-          <Text style={[styles.subtitle, { color: headerMuted }]}>{t('subtitle')}</Text>
+          <View style={styles.subtitleRow}>
+            <Text style={[styles.subtitle, { color: headerMuted }]}>{t('subtitle')}</Text>
+            <View style={styles.versionBadge}>
+              <Text style={styles.versionText}>{`${t('appVersion')} ${appInfo.version}`}</Text>
+            </View>
+          </View>
         </View>
       </Pressable>
       <View style={styles.actions}>
@@ -79,7 +85,17 @@ const styles = StyleSheet.create({
   logoMark: { width: 48, height: 48, borderRadius: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.18)' },
   brandText: { flex: 1, minWidth: 0 },
   title: { color: '#fff', fontSize: 28, fontWeight: '800' },
+  subtitleRow: { marginTop: 4, flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8 },
   subtitle: { marginTop: 4, fontSize: 14, lineHeight: 20, maxWidth: 560 },
+  versionBadge: {
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.32)',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: 'rgba(255,255,255,0.14)'
+  },
+  versionText: { color: '#fff', fontSize: 12, fontWeight: '800' },
   actions: { flexDirection: 'row', gap: 8 },
   iconButton: {
     width: 44,
