@@ -14,7 +14,8 @@ import { ThemeProvider, useAppTheme } from './src/theme/theme-context';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const webBaseUrl = process.env.EXPO_PUBLIC_APP_BASE_URL?.replace(/\/+$/, '');
-const linkingPrefixes = [webBaseUrl, Linking.createURL('/'), 'codereviewpilot://'].filter(Boolean) as string[];
+const webLinkingPrefixes = webBaseUrl ? [webBaseUrl] : [Linking.createURL('/')];
+const linkingPrefixes = [...webLinkingPrefixes, 'codereviewpilot://'];
 
 function AppNavigator() {
   const { colors, isDark } = useAppTheme();
