@@ -26,6 +26,7 @@ For versioned product changes, see [CHANGELOG.md](CHANGELOG.md).
 - Paste a GitHub PR URL like `https://github.com/owner/repo/pull/123`.
 - Fetch PR metadata, changed files, commits, and patches from GitHub.
 - Generate AI review sections: summary, critical issues, suggestions, security, performance, and best practices.
+- Show optional before/after code suggestions for issues when the AI can derive a concrete fix from the PR diff.
 - Store review history in the backend and locally on the device.
 - English and Thai UI with versioned release notes.
 - Dark/light mode, a shared gradient app header, browser tab titles like `Home - CodeReviewPilot AI`, and a custom web favicon.

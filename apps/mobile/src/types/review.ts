@@ -7,6 +7,10 @@ export type ReviewIssue = {
   line?: number;
   description: string;
   recommendation: string;
+  codeSuggestion?: {
+    before: string;
+    after: string;
+  };
 };
 
 export type ReviewResult = {

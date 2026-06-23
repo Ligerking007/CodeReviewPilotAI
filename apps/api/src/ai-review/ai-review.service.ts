@@ -9,6 +9,8 @@ import { ReviewResult, reviewResultSchema } from './review-result.schema';
 
 type ReviewResultJson = Prisma.ReviewResultCreateInput['result'];
 
+const hunkHeaderPattern = /^@@ -(?<oldStart>\d+)(?:,\d+)? \+(?<newStart>\d+)(?:,\d+)? @@/;
+
 @Injectable()
 export class AiReviewService {
   private readonly logger = new Logger(AiReviewService.name);
@@ -70,7 +72,7 @@ export class AiReviewService {
           {
             role: 'system',
             content:
-              'You are a senior software engineer. Return only strict JSON matching the requested schema. Be specific, concise, and actionable. Every issue object must include severity, title, description, and recommendation.'
+              'You are a senior software engineer. Return only strict JSON matching the requested schema. Be specific, concise, and actionable. Every issue object must include severity, title, description, and recommendation. Include codeSuggestion.before and codeSuggestion.after when a concrete code-level fix can be shown safely from the provided patch context.'
           },
           { role: 'user', content: prompt }
         ]
@@ -94,7 +96,7 @@ export class AiReviewService {
     const files = bundle.files
       .map((file) => {
         // Keep each patch bounded so a large PR cannot create an oversized OpenAI request from one file.
-        const patch = file.patch ? file.patch.slice(0, 12000) : '[binary or patch unavailable]';
+        const patch = file.patch ? this.formatPatchWithLineNumbers(file.patch).slice(0, 12000) : '[binary or patch unavailable]';
         return [
           `File: ${file.filename}`,
           `Status: ${file.status}`,
@@ -116,13 +118,25 @@ Review this GitHub pull request and produce a JSON object in ${outputLanguage}.
 Schema:
 {
   "summary": "string",
-  "criticalIssues": [{"severity":"critical|high|medium|low|info","title":"string","file":"string","line":1,"description":"string","recommendation":"string"}],
-  "suggestions": [{"severity":"critical|high|medium|low|info","title":"string","file":"string","line":1,"description":"string","recommendation":"string"}],
-  "security": [{"severity":"critical|high|medium|low|info","title":"string","file":"string","line":1,"description":"string","recommendation":"string"}],
-  "performance": [{"severity":"critical|high|medium|low|info","title":"string","file":"string","line":1,"description":"string","recommendation":"string"}],
-  "bestPractices": [{"severity":"critical|high|medium|low|info","title":"string","file":"string","line":1,"description":"string","recommendation":"string"}],
+  "criticalIssues": [{"severity":"critical|high|medium|low|info","title":"string","file":"string","line":1,"description":"string","recommendation":"string","codeSuggestion":{"before":"string","after":"string"}}],
+  "suggestions": [{"severity":"critical|high|medium|low|info","title":"string","file":"string","line":1,"description":"string","recommendation":"string","codeSuggestion":{"before":"string","after":"string"}}],
+  "security": [{"severity":"critical|high|medium|low|info","title":"string","file":"string","line":1,"description":"string","recommendation":"string","codeSuggestion":{"before":"string","after":"string"}}],
+  "performance": [{"severity":"critical|high|medium|low|info","title":"string","file":"string","line":1,"description":"string","recommendation":"string","codeSuggestion":{"before":"string","after":"string"}}],
+  "bestPractices": [{"severity":"critical|high|medium|low|info","title":"string","file":"string","line":1,"description":"string","recommendation":"string","codeSuggestion":{"before":"string","after":"string"}}],
   "markdown": "A readable Markdown review"
 }
+
+Only include codeSuggestion when both snippets are useful:
+- before: the relevant existing code or compact pseudocode based on the patch
+- after: the suggested replacement code
+- keep snippets short and focused
+- omit codeSuggestion if the fix is conceptual, uncertain, or cannot be derived from the provided diff
+
+Line number rules:
+- Set issue.line to the most relevant new-file line from the annotated patch.
+- Added lines are marked as "+ new:<line>"; unchanged context lines include "new:<line>".
+- If the issue concerns removed code only, use the nearest related new-file context line.
+- Do not invent line numbers that are not present in the annotated patch.
 
 Focus areas:
 - code quality
@@ -148,5 +162,48 @@ ${commits}
 Changed files:
 ${files}
 `;
+  }
+
+  private formatPatchWithLineNumbers(patch: string) {
+    let oldLine: number | undefined;
+    let newLine: number | undefined;
+
+    return patch
+      .split('\n')
+      .map((line) => {
+        const hunkMatch = line.match(hunkHeaderPattern);
+
+        if (hunkMatch?.groups) {
+          oldLine = Number(hunkMatch.groups.oldStart);
+          newLine = Number(hunkMatch.groups.newStart);
+          return line;
+        }
+
+        if (oldLine === undefined || newLine === undefined) {
+          return line;
+        }
+
+        if (line.startsWith('+') && !line.startsWith('+++')) {
+          const annotatedLine = `+ new:${newLine} | ${line.slice(1)}`;
+          newLine += 1;
+          return annotatedLine;
+        }
+
+        if (line.startsWith('-') && !line.startsWith('---')) {
+          const annotatedLine = `- old:${oldLine} | ${line.slice(1)}`;
+          oldLine += 1;
+          return annotatedLine;
+        }
+
+        if (line.startsWith(' ')) {
+          const annotatedLine = `  old:${oldLine} new:${newLine} | ${line.slice(1)}`;
+          oldLine += 1;
+          newLine += 1;
+          return annotatedLine;
+        }
+
+        return line;
+      })
+      .join('\n');
   }
 }

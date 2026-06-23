@@ -18,6 +18,8 @@ export const appInfo = {
           'Added a gradient app header and GitHub username display beside Logout.',
           'Added a shared app header with theme, language, and history shortcuts on every screen.',
           'Added the current app version to the shared header on every screen.',
+          'Added before and after code suggestions to AI review issue cards when concrete fixes are available.',
+          'Improved AI review line references by using annotated diff line numbers.',
           'Improved AI review Markdown rendering for inline code and code blocks.'
         ]
       },
@@ -80,6 +82,8 @@ export const appInfo = {
           'เพิ่ม header แบบไล่สีและแสดง GitHub username ข้างปุ่ม Logout',
           'เพิ่ม header กลางพร้อมปุ่มธีม ภาษา และประวัติบนทุกหน้า',
           'เพิ่มเวอร์ชันปัจจุบันของแอปใน header กลางบนทุกหน้า',
+          'เพิ่มการแสดงโค้ดก่อนแก้และหลังแก้ใน issue card เมื่อ AI มีตัวอย่างการแก้ไขที่ชัดเจน',
+          'ปรับเลขบรรทัดในผล AI review ให้ใกล้จุดที่แก้มากขึ้นด้วยเลขบรรทัดจาก diff',
           'ปรับการแสดงผล Markdown ของ AI review ให้อ่าน inline code และ code block ง่ายขึ้น'
         ]
       },

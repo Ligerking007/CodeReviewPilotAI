@@ -15,10 +15,13 @@
 - Explicit agent localization rules for keeping English and Thai UI text, release notes, and related tests aligned.
 - Explicit agent UI rules for responsive layouts and light/dark/system theme support.
 - Current app version display in the shared UI header across screens.
+- Optional before/after code suggestions in AI review issue cards when concrete fixes are available.
 
 ### Changed
 
 - Added focused comments around token encryption, AI result normalization, and OpenAI prompt size boundaries.
+- AI review schema and prompt now support optional `codeSuggestion` snippets for actionable issues.
+- AI review prompts now annotate diff hunks with old and new file line numbers so issue locations are closer to the changed code.
 
 ## 0.1.0 - 2026-05-15
 

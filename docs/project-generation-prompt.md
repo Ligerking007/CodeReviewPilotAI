@@ -65,6 +65,7 @@ Use GitHub API to fetch:
 - PR details
 - Changed files
 - File patches/diffs
+- Annotated old/new line numbers from diff hunks
 - Commits
 
 Support:
@@ -104,9 +105,10 @@ Each issue should include:
 - severity: critical | high | medium | low | info
 - title
 - file
-- line
+- line, using the annotated new-file line number from the diff when available
 - description
 - recommendation
+- optional codeSuggestion with before and after snippets when a concrete code-level fix can be derived from the PR diff
 
 Validate AI output with Zod.
 Normalize incomplete AI output safely.

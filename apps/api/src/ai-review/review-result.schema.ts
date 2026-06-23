@@ -10,6 +10,20 @@ const optionalLineSchema = z
   .preprocess((value) => (value === null || value === '' ? undefined : value), z.coerce.number().int().positive().optional())
   .catch(undefined);
 
+const optionalCodeSuggestionSchema = z
+  .object({
+    before: z.string().catch(''),
+    after: z.string().catch('')
+  })
+  .transform((codeSuggestion) => {
+    const before = codeSuggestion.before.trim();
+    const after = codeSuggestion.after.trim();
+
+    return before && after ? { before, after } : undefined;
+  })
+  .optional()
+  .catch(undefined);
+
 export const reviewIssueSchema = z
   .preprocess((value) => {
     // The model may occasionally return a plain bullet string; normalize it so the UI still renders safely.
@@ -29,7 +43,8 @@ export const reviewIssueSchema = z
     file: optionalStringSchema,
     line: optionalLineSchema,
     description: z.string().catch(''),
-    recommendation: z.string().catch('')
+    recommendation: z.string().catch(''),
+    codeSuggestion: optionalCodeSuggestionSchema
   }))
   .transform((issue) => {
     const description = issue.description || issue.recommendation || issue.title;

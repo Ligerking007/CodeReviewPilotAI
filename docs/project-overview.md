@@ -207,6 +207,8 @@ The response schema includes:
 - `bestPractices`
 - `markdown`
 
+Each issue can also include an optional `codeSuggestion` object with `before` and `after` snippets. The backend keeps this optional so existing review history still renders, and it drops incomplete snippet pairs during Zod normalization.
+
 This design has several advantages:
 
 - The frontend can render the result predictably.
@@ -221,6 +223,8 @@ The prompt asks the model to focus on code quality, possible bugs, security issu
 ### Diff Size Limiting
 
 The backend limits how much patch content is sent to the model to control token usage, latency, and cost. The trade-off is that very large PRs may not be analyzed fully in a single request. A production version should split large diffs into chunks and summarize them with a map-reduce style workflow.
+
+Patch hunks are annotated with old and new file line numbers before they are sent to the model. This gives AI review issues a concrete source for the `line` field and reduces line-number drift compared with asking the model to infer locations from raw diff text.
 
 ### OAuth First, GitHub App Ready
 

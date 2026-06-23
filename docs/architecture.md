@@ -117,6 +117,8 @@ flowchart TB
 
 The shared `Screen` layout renders the gradient app header on every page. It includes the app identity, theme toggle, language toggle, and history shortcut. The Home screen also shows app version, developer name, and collapsible versioned release notes.
 
+`IssueCard` renders the normalized issue title, severity, location, description, and recommendation. When the API returns a complete optional `codeSuggestion` pair, it also shows localized before/after code blocks for the proposed fix.
+
 ## Backend
 
 The NestJS API owns authentication, GitHub integration, AI review generation, and database persistence.
@@ -153,6 +155,7 @@ sequenceDiagram
   Prisma-->>Service: User data
   Service->>GitHub: Fetch PR details, files, commits
   GitHub-->>Service: PR bundle
+  Service->>Service: Annotate patch hunks with old and new file line numbers
   Service->>OpenAI: Send bounded review prompt
   OpenAI-->>Service: Structured JSON review
   Service->>Prisma: Persist history and review result
@@ -167,8 +170,8 @@ The unit tests focus on code paths that protect product reliability and security
 - `auth/token-crypto.service.spec.ts`: verifies GitHub token encryption/decryption, random IV usage, and invalid encryption key handling.
 - `auth/github-allowlist.spec.ts`: verifies case-insensitive allowlist parsing and rejection behavior.
 - `github/pr-url.spec.ts`: verifies PR URL parsing before the backend calls GitHub.
-- `ai-review/review-result.schema.spec.ts`: verifies AI output normalization so incomplete model responses still render safely.
-- `ai-review/ai-review.service.spec.ts`: verifies prompt language selection, PR metadata inclusion, binary patch fallback, and per-file patch size limits.
+- `ai-review/review-result.schema.spec.ts`: verifies AI output normalization so incomplete model responses still render safely, including optional before/after code suggestions.
+- `ai-review/ai-review.service.spec.ts`: verifies prompt language selection, PR metadata inclusion, binary patch fallback, diff line annotation, and per-file patch size limits.
 - Mobile utility tests verify PR URL validation, app metadata/release-note consistency, and GitHub username extraction from the app JWT payload.
 
 ## Database

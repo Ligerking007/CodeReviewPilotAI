@@ -71,6 +71,9 @@ describe('AiReviewService buildPrompt', () => {
     expect(prompt).toContain('Author: developer');
     expect(prompt).toContain('File: src/consent.ts');
     expect(prompt).toContain('File: assets/icon.png');
+    expect(prompt).toContain('"codeSuggestion":{"before":"string","after":"string"}');
+    expect(prompt).toContain('Only include codeSuggestion when both snippets are useful');
+    expect(prompt).toContain('Do not invent line numbers that are not present in the annotated patch.');
     expect(prompt).toContain('[binary or patch unavailable]');
   });
 
@@ -85,5 +88,36 @@ describe('AiReviewService buildPrompt', () => {
 
     expect(prompt).not.toContain('+'.repeat(12001));
     expect(prompt).toContain('+'.repeat(12000));
+  });
+
+  it('annotates unified diff patches with old and new file line numbers', () => {
+    const prompt = createService().buildPrompt(
+      createBundle({
+        files: [
+          {
+            filename: 'src/tuning-options.ts',
+            status: 'modified',
+            additions: 2,
+            deletions: 1,
+            changes: 3,
+            patch: [
+              '@@ -247,5 +247,6 @@ export function getOptions() {',
+              ' const section = config.getSection("LiveTranslation");',
+              '-return section.get<TuningOptions>();',
+              '+const options = section.get<TuningOptions>();',
+              '+return validateOptions(options);',
+              ' }'
+            ].join('\n')
+          }
+        ]
+      }),
+      'en'
+    );
+
+    expect(prompt).toContain('  old:247 new:247 | const section = config.getSection("LiveTranslation");');
+    expect(prompt).toContain('- old:248 | return section.get<TuningOptions>();');
+    expect(prompt).toContain('+ new:248 | const options = section.get<TuningOptions>();');
+    expect(prompt).toContain('+ new:249 | return validateOptions(options);');
+    expect(prompt).toContain('  old:249 new:250 | }');
   });
 });
